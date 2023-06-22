@@ -54,6 +54,55 @@ private:
     uint16_t size; 
 };
 
+class Registers {
+    uint16_t registers[7];
+
+public:
+    union {
+        uint16_t A;
+        struct {
+            uint8_t AL;
+            uint8_t AH;
+        };
+    };
+    union {
+        uint16_t B;
+        struct {
+            uint8_t BL;
+            uint8_t BH;
+        };
+    };
+    union {
+        uint16_t C;
+        struct {
+            uint8_t CL;
+            uint8_t CH;
+        };
+    };
+    union {
+        uint16_t D;
+        struct {
+            uint8_t DL;
+            uint8_t DH;
+        };
+    };
+
+    // 32-bit pair-addressable register combinations
+    uint32_t AB() const { return (static_cast<uint32_t>(A) << 16) | B; }
+    uint32_t AC() const { return (static_cast<uint32_t>(A) << 16) | A; }
+    uint32_t AD() const { return (static_cast<uint32_t>(A) << 16) | D; }
+    uint32_t BC() const { return (static_cast<uint32_t>(B) << 16) | C; }
+    uint32_t BD() const { return (static_cast<uint32_t>(B) << 16) | D; }
+    uint32_t CD() const { return (static_cast<uint32_t>(C) << 16) | D; }
+
+    // 64-bit quad-addressable register
+    uint64_t ABCD() const { 
+        return  (static_cast<uint64_t>(A) << 48) |
+                (static_cast<uint64_t>(B) << 32) |
+                (static_cast<uint64_t>(C) << 16) |
+                D;
+    }
+};
 /// memory segments
 /// 0x0000 - 0x1FFF: System data - interrupt vectors, BIOS, stack. Stack starts at top (0x1FFF) and grows down.
 /// 0x2000 - 0x5FFF: General RAM - variables/dynamically allocated data
