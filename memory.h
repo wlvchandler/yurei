@@ -2,9 +2,13 @@
 
 #include "utility/log.h"
 #include "isa.h"
+
 #include  <iostream>
 #include  <iomanip>
 #include  <string>
+#include  <vector>
+
+class Opcode;
 
 namespace REGISTERS {
     enum class REGISTER : unsigned char {

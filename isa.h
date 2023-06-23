@@ -1,15 +1,19 @@
 #pragma once
 
+#include "memory.h"
 #include <vector>
 #include <iostream>
 
+class Memory;
+
 enum class Instruction : unsigned char {
-    NOP, LOAD, STORE, MOV, ADD, SUB, MUL, DIV, AND, OR, XOR, NOT,
+    NOP, HALT, LOAD, STORE, MOV, ADD, SUB, MUL, DIV, AND, OR, XOR, NOT,
     JMP, JZ, JNZ, JC, JNC, CALL, RET, PUSH, POP, N_OPCODES
 };
 
 class Opcode {
     void NOP();
+    void HALT();
     void LOAD();
     void STORE();
     void MOV();
@@ -33,7 +37,8 @@ class Opcode {
 
     using OpcodeFunction = void (Opcode::*)();
     static constexpr OpcodeFunction opcodeFunctions[] = {
-        &Opcode::NOP, &Opcode::LOAD, &Opcode::STORE, &Opcode::MOV,
+        &Opcode::NOP, &Opcode::HALT, 
+        &Opcode::LOAD, &Opcode::STORE, &Opcode::MOV,
         &Opcode::ADD, &Opcode::SUB, &Opcode::MUL, &Opcode::DIV,
         &Opcode::AND, &Opcode::OR, &Opcode::XOR, &Opcode::NOT,
         &Opcode::JMP, &Opcode::JZ, &Opcode::JNZ, &Opcode::JC, &Opcode::JNC,
@@ -48,4 +53,5 @@ public:
 
 private:
     std::vector<OpcodeFunction> instructions;
+    Memory* main_memory;
 };

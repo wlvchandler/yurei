@@ -1,6 +1,7 @@
 #include "isa.h"
 
 Opcode::Opcode() {
+    main_memory = Memory::getInstance();
     for (const auto& func : opcodeFunctions) {
         instructions.push_back(func);
     }
@@ -16,6 +17,7 @@ void Opcode::load(uint16_t instruction) {
 }
 
 void Opcode::NOP() { std::cout << "NOP\n"; }
+void Opcode::HALT() { std::cout << "HALT\n"; }
 void Opcode::LOAD() {
     std::cout << "LOAD\n";
 }
