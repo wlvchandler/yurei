@@ -1,6 +1,5 @@
 #include "memory.h"
 
-
 Memory* Memory::instance_ = nullptr;
 
 Memory::Memory() {
@@ -195,5 +194,52 @@ void Memory::dump() {
     print_registers(this->registers);
     std::cout << std::endl;
     print_address_space(this->address_space, 256);
-    //    print_address_space(this->address, this->ADDRESS_SPACE_SIZE);
+    // print_address_space(this->address, this->ADDRESS_SPACE_SIZE);
+}
+
+
+// 32-bit pair-addressable register combinations
+inline uint32_t Registers::AB() const { return (static_cast<uint32_t>(A) << 16) | B; }
+inline uint32_t Registers::AC() const { return (static_cast<uint32_t>(A) << 16) | A; }
+inline uint32_t Registers::AD() const { return (static_cast<uint32_t>(A) << 16) | D; }
+inline uint32_t Registers::BC() const { return (static_cast<uint32_t>(B) << 16) | C; }
+inline uint32_t Registers::BD() const { return (static_cast<uint32_t>(B) << 16) | D; }
+inline uint32_t Registers::CD() const { return (static_cast<uint32_t>(C) << 16) | D; }
+
+// 64-bit quad-addressable register
+inline uint64_t Registers::ABCD() const {
+    return  (static_cast<uint64_t>(A) << 48) |
+        (static_cast<uint64_t>(B) << 32) |
+        (static_cast<uint64_t>(C) << 16) |
+        D;
+}
+
+inline void Registers::set(REGISTERS::REGISTER reg, uint16_t value) {
+    using namespace REGISTERS;
+    switch (reg) {
+    case REGISTER::A:   this->A  = value; break;
+    case REGISTER::B:   this->B  = value; break;
+    case REGISTER::C:   this->C  = value; break;
+    case REGISTER::D:   this->D  = value; break;
+    case REGISTER::SP:  this->SP = value; break;
+    case REGISTER::PC:  this->PC = value; break;
+    case REGISTER::FLAGS:  this->FLAGS = value; break;
+    default: break;
+    };
+}
+
+inline uint16_t Registers::get(REGISTERS::REGISTER reg) const {
+    using namespace REGISTERS;
+    uint16_t r = 0;
+    switch (reg) {
+    case REGISTER::A:   r = this->A; break;
+    case REGISTER::B:   r = this->B; break;
+    case REGISTER::C:   r = this->C; break;
+    case REGISTER::D:   r = this->D; break;
+    case REGISTER::SP:  r = this->SP; break;
+    case REGISTER::PC:  r = this->PC; break;
+    case REGISTER::FLAGS:  r = this->FLAGS; break;
+    default: r = 0;
+    }
+    return r;
 }
