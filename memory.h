@@ -7,6 +7,7 @@
 #include  <iomanip>
 #include  <string>
 #include  <vector>
+#include <cstdint>
 
 class Opcode;
 
@@ -59,8 +60,6 @@ private:
 };
 
 class Registers {
-public:
-    Registers() : A(0), B(0), C(0), D(0), SP(0), PC(0), FLAGS(0) {}
     union {
         uint16_t A;
         struct {
@@ -93,6 +92,9 @@ public:
     uint16_t SP;
     uint16_t PC;
     uint16_t FLAGS;
+
+public:
+    Registers() : A(0), B(0), C(0), D(0), SP(0), PC(0), FLAGS(0) {}
 
     // 32-bit pair-addressable register combinations
     uint32_t AB() const; 

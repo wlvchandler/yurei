@@ -154,7 +154,7 @@ static void print_registers(uint16_t* registers) {
     std::cout << "Register Contents" << std::endl;
     std::cout << "-----------------" << std::endl;
 
-    auto _print_register = [](char* r, uint16_t v) {
+    auto _print_register = [](const char* r, uint16_t v) {
         std::cout << r << "\t 0x" << std::setfill('0') << std::setw(2) << v << std::endl;
     };
     _print_register("A", registers[A]);

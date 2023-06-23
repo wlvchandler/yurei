@@ -1,5 +1,6 @@
 #pragma once
 #include "device.h"
+#include <cstdint>
 
 class Button {
 	uint16_t signal;

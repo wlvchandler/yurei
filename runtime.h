@@ -4,6 +4,7 @@
 #include "isa.h"
 #include "memory.h"
 #include "device/gamepad.h"
+#include <cstdint>
 
 class Runtime {
 	std::string appfile_name;
