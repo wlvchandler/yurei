@@ -31,7 +31,7 @@ void Opcode::AND() {}
 void Opcode::OR() {}
 void Opcode::XOR() {}
 void Opcode::NOT() {}
-void Opcode::JMP() {}
+void Opcode::JUMP() {}
 void Opcode::JZ() {}
 void Opcode::JNZ() {}
 void Opcode::JC() {}

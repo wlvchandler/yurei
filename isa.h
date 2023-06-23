@@ -8,6 +8,7 @@
 class Memory;
 
 enum class Instruction : uint16_t {
+    N_OPCODES = 22,
     NOP  = 0x0000, HALT  = 0x0001, 
     LOAD = 0x000A, STORE = 0x000B, MOV = 0x000C, PUSH = 0x000D, POP = 0x000E, 
     ADD  = 0x0010, SUB   = 0x0011, MUL = 0x0012, DIV  = 0x0013, 
@@ -32,7 +33,7 @@ class Opcode {
     void OR();
     void XOR();
     void NOT();
-    void JMP();
+    void JUMP();
     void JZ();
     void JNZ();
     void JC();
@@ -48,7 +49,7 @@ class Opcode {
         &Opcode::LOAD, &Opcode::STORE, &Opcode::MOV,
         &Opcode::ADD, &Opcode::SUB, &Opcode::MUL, &Opcode::DIV,
         &Opcode::AND, &Opcode::OR, &Opcode::XOR, &Opcode::NOT,
-        &Opcode::JMP, &Opcode::JZ, &Opcode::JNZ, &Opcode::JC, &Opcode::JNC,
+        &Opcode::JUMP, &Opcode::JZ, &Opcode::JNZ, &Opcode::JC, &Opcode::JNC,
         &Opcode::CALL, &Opcode::RET, &Opcode::PUSH, &Opcode::POP
     };
 

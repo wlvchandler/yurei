@@ -21,7 +21,7 @@ void Assembler::generateBinary(const std::string& f) {
 
         auto it = opcodes.find(token);
         if (it != opcodes.end()) {
-            binaryOut.push_back(it->second | (ia ? 0x8000 : 0));
+            binaryOut.push_back(static_cast<uint16_t>(it->second) | (ia ? 0x8000 : 0));
         } else {
             try {
                 binaryOut.push_back(std::stoi(token));
