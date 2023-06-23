@@ -19,4 +19,5 @@ public:
 
 	void start();
 	void load_application();
+	void LoadToROM();
 };

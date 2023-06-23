@@ -16,26 +16,29 @@ class Opcode;
 
 using namespace REGISTERS;
 
-//enum class Instruction : unsigned char {
-//	NOP, HALT, LOAD, STORE, MOV, ADD, SUB, MUL, DIV, AND, OR, XOR, NOT,
-//	JMP, JZ, JNZ, JC, JNC, CALL, RET, PUSH, POP, N_OPCODES
-//};
+struct InstructionLine {
+	Opcode opcode;
+	std::vector<std::string> operands;
+};
 
-//struct Instruction {
-//	Opcode opcode;
-//	std::vector<std::string> operands;
-//};
+enum class TokenType {
+	Opcode, Register, ImmediateValue, MemoryAddress, Unknown
+};
+
+struct Token {
+	TokenType type;
+	std::string value;
+};
 
 class Assembler {
-	//void tokenize(const std::string&); 
-	//void generateBinary(Instruction&, std::ostream&);
-	void generateBinary(const std::string&);
+	void parseTokens(std::vector<Token>& const);
+	std::vector<Token> tokenize(const std::string&);
 	void resolveSymbols();
 
 	std::string filename;
 
 public:
-	void parse(std::istream&); // std::ifstream in("input.jasm");
+	void generateBinary(const std::string&);
 	void writeBinary(const std::string&);
 
 private:
