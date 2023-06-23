@@ -1,7 +1,4 @@
-﻿// jaskASM.cpp : Defines the entry point for the application.
-//
-
-#include "jaskASM.h"
+﻿#include "jaskASM.h"
 #include "utility/log.h"
 #include "assembler.h"
 #include "runtime.h"
