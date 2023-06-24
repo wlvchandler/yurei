@@ -1,0 +1,15 @@
+NOP
+MOV A, 123
+ADD A, B
+ADD A,B
+ADD A, [B]
+HALT ; comment
+
+;
+NOP ;comment
+NOP; comment
+NOP;comment
+N;OP ; comment
+
+label:
+	NOP

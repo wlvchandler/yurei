@@ -14,7 +14,7 @@ void Assembler::writeBinary(const std::string& output_file) {
     out.close();
 }
 
-void Assembler::parseTokens(std::vector<Token>& const tokens) {
+void Assembler::parseTokens(std::vector<Token>& tokens) {
 
     for (auto& token : tokens) {
         if (token.value.empty()) {
@@ -45,26 +45,51 @@ void Assembler::parseTokens(std::vector<Token>& const tokens) {
     }
 }
 
-std::vector<Token> Assembler::tokenize(const std::string& line) {
-    std::vector<Token> tokens;
-    std::istringstream iss(line);
-    std::string token;
 
-    while (iss >> token) {
+static void saveToken(std::string& token, std::vector<std::string>& token_list) {
+  token_list.push_back(token);
+  token.clear();
+}
 
+std::vector<std::string> Assembler::tokenize(const std::string& line) {
+    std::vector<std::string> tokens;
+    std::string currentToken;
+    for (char c : line + ' ') {
+      if (c == ';') {
+	if (!currentToken.empty()) {
+	  saveToken(currentToken, tokens);
+	}
+	break;
+      }
+      if ((c == ',' || isspace(c)) && !currentToken.empty()) {
+	saveToken(currentToken, tokens);
+	continue;
+      }
+      if (isspace(c)) { continue; }
+      currentToken.push_back(c);
     }
+
+    
     return tokens;
 }
 
 void Assembler::generateBinary(const std::string& f) {
-    std::istringstream iss(f);
-	std::string line;
-
-    while (std::getline(iss, line)) {
-        auto tokens = tokenize(line);
-        parseTokens(tokens);
+  std::ifstream file(f);
+  if (!file.is_open()){
+    std::cerr << "Failed to open file\n";
+    return;
+  }
+  std::string line;
+  std::vector<std::string> all_tokens;
+  while (std::getline(file, line)) {
+    auto tokens = tokenize(line);
+    for (auto s : tokens){
+      all_tokens.push_back(s);
     }
+    //parseTokens(tokens);
+  }
 
+  file.close();
 }
 
 void Assembler::resolveSymbols() {

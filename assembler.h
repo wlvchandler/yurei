@@ -17,8 +17,8 @@ class Opcode;
 using namespace REGISTERS;
 
 struct InstructionLine {
-	Opcode opcode;
-	std::vector<std::string> operands;
+  Opcode opcode;
+  std::vector<std::string> operands;
 };
 
 enum class TokenType {
@@ -31,8 +31,8 @@ struct Token {
 };
 
 class Assembler {
-	void parseTokens(std::vector<Token>& const);
-	std::vector<Token> tokenize(const std::string&);
+	void parseTokens(std::vector<Token>&);
+        std::vector<std::string> tokenize(const std::string&);
 	void resolveSymbols();
 
 	std::string filename;
