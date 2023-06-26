@@ -55,3 +55,13 @@
 # Shortcuts
 
 - @: Current address (PC?)
+
+## TODO
+
+### Assembler:
+- Error checking
+- Better semantic validation
+
+### Runtime:
+- ...
+

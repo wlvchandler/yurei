@@ -1,17 +1,23 @@
 #include "assembler.h"
 
+// byte order mark
 static void writeBOM(std::ofstream& ofs) {
     uint16_t BOM = isSystemLittleEndian() ? 0xFFFE : 0xFEFF;
     ofs.write(reinterpret_cast<const char*>(&BOM), sizeof(BOM));
+}
+
+static void writeData(std::ofstream& ofs, std::vector<uint16_t>& data) {
+    ofs.write(reinterpret_cast<const char*>(data.data()), data.size() * sizeof(uint16_t));
 }
 
 void Assembler::writeBinary(const std::string& output_file) {
     this->filename = output_file;
     std::ofstream out(output_file, std::ios::binary);
     if (out.is_open()){
-      out.write(reinterpret_cast<const char*>(binaryOut.data()), binaryOut.size() * sizeof(uint16_t));
+        writeBOM(out);
+        writeData(out, binaryOut);
     } else {
-      std::cerr << "Could not open file to write\n";
+        std::cerr << "Could not open file to write\n";
     }
     out.close();
 }
