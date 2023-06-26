@@ -8,8 +8,10 @@ static void writeBOM(std::ofstream& ofs) {
 void Assembler::writeBinary(const std::string& output_file) {
     this->filename = output_file;
     std::ofstream out(output_file, std::ios::binary);
-    for (auto& byte : this->binaryOut) {
-        out << byte;
+    if (out.is_open()){
+      out.write(reinterpret_cast<const char*>(binaryOut.data()), binaryOut.size() * sizeof(uint16_t));
+    } else {
+      std::cerr << "Could not open file to write\n";
     }
     out.close();
 }
@@ -143,7 +145,7 @@ void Assembler::assemble(const std::string& f) {
     }
 
     generateBinary(); 
-    writeBinary("out.j16");
+    writeBinary("/tmp/out.j16");
 
     file.close();
 
