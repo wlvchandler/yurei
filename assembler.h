@@ -2,7 +2,6 @@
 
 #include "utility/sysinfo.h"
 #include "isa.h"
-#include "memory.h"
 #include <cstdint>
 #include <fstream>
 #include <map>
@@ -11,10 +10,7 @@
 #include <vector>
 #include <unordered_map>
 
-class Memory;
 class Opcode;
-
-using namespace REGISTERS;
 
 struct InstructionLine {
   Opcode opcode;
@@ -31,20 +27,21 @@ struct Token {
 };
 
 class Assembler {
-	void parseTokens(std::vector<Token>&);
-        std::vector<std::string> tokenize(const std::string&);
+	void generateBinary();
+	std::vector<std::string> tokenize(const std::string&);
 	void resolveSymbols();
 
 	std::string filename;
 
 public:
-	void generateBinary(const std::string&);
+	void assemble(const std::string&);
 	void writeBinary(const std::string&);
 
 private:
+	std::vector<std::string> pass1_tokens;
 	std::vector<Instruction> instructions;
 	std::vector<uint16_t> binaryOut;
-
+	std::unordered_map<std::string, uint16_t> symbolTable;
 
 	const std::unordered_map<std::string, Instruction> opcodes =
 	{
@@ -57,5 +54,4 @@ private:
 		{"A",    Instruction::A},    {"B",     Instruction::B},     {"C",   Instruction::C},   {"D",    Instruction::D}
 	};
 
-	std::map<std::string, int> symbolTable;
 };

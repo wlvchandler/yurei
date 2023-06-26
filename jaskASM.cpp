@@ -10,7 +10,7 @@ using namespace std;
 int main() {
     logger::info << "Initializing Assembler" << std::endl;
     Assembler ASM;   
-    ASM.generateBinary("../test.j16");
+    ASM.assemble("C:/users/will/source/repos/jaskASM/test.j16");
 
     //logger::info << "Initializing Runtime" << std::endl;
     //Runtime app;

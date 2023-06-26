@@ -13,7 +13,7 @@ class Opcode;
 
 namespace REGISTERS {
     enum class REGISTER : unsigned char {
-        A = 0, B, C, D, SP, PC, FLAGS, NUM_REGISTERS
+        A = 0, B, C, D, I, J, SP, PC, FLAGS, NUM_REGISTERS
     };
 
     #define Accessible(X) constexpr unsigned char X = static_cast<int>(REGISTER::X)
@@ -21,6 +21,8 @@ namespace REGISTERS {
     Accessible(B);
     Accessible(C);
     Accessible(D);
+    Accessible(I);
+    Accessible(J);
     Accessible(SP);
     Accessible(PC);
     Accessible(FLAGS);
