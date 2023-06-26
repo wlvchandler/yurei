@@ -11,7 +11,7 @@ Opcode::~Opcode() {}
 
 void Opcode::load(uint16_t instruction) {
     std::cout << "Loading " << instruction << std::endl;
-    if (instruction <= static_cast<uint16_t>(Instruction::N_OPCODES)) {
+    if (instruction <= static_cast<uint16_t>(Mnemonic::N_OPCODES)) {
         (this->*opcodeFunctions[instruction])();
     } // else std::cout << "No opcode for instruction 0x" << std::hex << instruction << std::dec << std::endl;
 }
@@ -26,7 +26,9 @@ void Opcode::MOV() {}
 void Opcode::ADD() {}
 void Opcode::SUB() {}
 void Opcode::MUL() {}
+void Opcode::SMUL() {}
 void Opcode::DIV() {}
+void Opcode::SDIV() {}
 void Opcode::AND() {}
 void Opcode::OR() {}
 void Opcode::XOR() {}

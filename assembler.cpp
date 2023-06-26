@@ -54,6 +54,34 @@ static bool isNumber(const std::string& token, int16_t& value) {
 
 void Assembler::generateBinary() {
 
+
+    for (auto& instruction : instructions) {
+        // handle mnemonic
+        if (instruction.mnemonic.type == TokenType::Opcode) {
+            auto expected = expectedOperands.find(std::get<std::string>(instruction.mnemonic.value));
+            if (expected == expectedOperands.end()) {
+                std::cerr << "Unknown mnemonic\n";
+                return;
+            }
+        }
+        //in progress
+
+        for (auto& operand : instruction.operands) {
+            switch (operand.type) {
+            case TokenType::Opcode:
+                break;
+            case TokenType::Reg:
+                break;
+            case TokenType::ImmAddr:
+                break;
+            case TokenType::Label:
+                break;
+            default:
+                break;
+            };
+        }
+    }
+
     for (auto& token : pass1_tokens) {
         if (token.empty()) {
             continue;
@@ -97,14 +125,61 @@ void Assembler::generateBinary() {
 }
 
 
-static void saveToken(std::string& token, std::vector<std::string>& token_list) {
-  token_list.push_back(token);
-  token.clear();
+ bool Assembler::validateInstructionLine() {
+     return true;
+}
+
+ void Assembler::parseToken(std::string token) {
+    Token t;
+    t.value = token;
+
+    // strip indirect address formatting
+    if (token.front() == '[' && token.back() == ']') {
+        token = token.substr(1, token.size() - 2);
+        t.ia = true;
+    }
+
+    bool parsed = false;
+
+    // check if it's a known opcode or register
+    if (!parsed) {
+        auto it = opcodes.find(token);
+        if (it != opcodes.end()) {
+            t.type = TokenType::Opcode;
+            if (static_cast<uint16_t>(it->second) > 0x00F0) {
+                t.type = TokenType::Reg;
+            }
+            parsed = true;
+        }
+    }
+
+    // check if it's a number
+    if (!parsed) {
+        int16_t immaddr;
+        if (isNumber(token, immaddr)) {
+            t.type = TokenType::ImmAddr;
+            t.value = static_cast<uint16_t>(immaddr);
+            parsed = true;
+        }
+    }
+
+    // assume it's a label
+    if (!parsed) {
+        t.type = TokenType::Label;
+    }
+    
+    if (current_ins_line.mnemonic.type == TokenType::None) {
+        current_ins_line.mnemonic = t;
+    } else {
+        current_ins_line.operands.push_back(t);
+    }
 }
 
 std::vector<std::string> Assembler::tokenize(const std::string& line) {
     std::vector<std::string> tokens;
     std::string currentToken;
+
+    current_ins_line.mnemonic = {}; // refurbish
 
     static uint16_t current_address = 0;
     bool isLabel = false;
@@ -112,7 +187,7 @@ std::vector<std::string> Assembler::tokenize(const std::string& line) {
     for (char c : line + ' ') {
         if (c == ';') {
 	        if (!currentToken.empty()) {
-	            saveToken(currentToken, tokens);
+                parseToken(currentToken);
 	        }
 	        break;
         }
@@ -123,7 +198,7 @@ std::vector<std::string> Assembler::tokenize(const std::string& line) {
             continue;
         }
         if ((c == ',' || isspace(c)) && !currentToken.empty()) {
-	        saveToken(currentToken, tokens);
+            parseToken(currentToken);
 	        continue;
         }
         if (isspace(c)) { continue; }
@@ -145,9 +220,10 @@ void Assembler::assemble(const std::string& f) {
     }
     std::string line;
     while (std::getline(file, line)) {
-        for (auto s : tokenize(line)){
-            pass1_tokens.push_back(s);
-        }
+        tokenize(line);
+        //for (auto s : tokenize(line)){
+        //    pass1_tokens.push_back(s);
+        //}
     }
 
     generateBinary(); 
@@ -155,7 +231,4 @@ void Assembler::assemble(const std::string& f) {
 
     file.close();
 
-}
-
-void Assembler::resolveSymbols() {
 }
