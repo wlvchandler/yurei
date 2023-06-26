@@ -5,4 +5,8 @@
 
 #include <iostream>
 
+#include "utility/log.h"
+#include "assembler.h"
+#include "runtime.h"
+
 // TODO: Reference additional headers your program requires here.

@@ -1,16 +1,17 @@
 ﻿#include "jaskASM.h"
-#include "utility/log.h"
-#include "assembler.h"
-#include "runtime.h"
 
-#include <iostream>
+#include <filesystem>
 
 using namespace std;
 
+
 int main() {
+    std::filesystem::path cwd = std::filesystem::current_path();
+    std::filesystem::path filePath = cwd / "../test/test.jsrc";
+
     logger::info << "Initializing Assembler" << std::endl;
     Assembler ASM;   
-    ASM.assemble("C:/users/will/source/repos/jaskASM/test.j16");
+    ASM.assemble(filePath.string());
 
     //logger::info << "Initializing Runtime" << std::endl;
     //Runtime app;

@@ -145,7 +145,7 @@ void Assembler::assemble(const std::string& f) {
     }
 
     generateBinary(); 
-    writeBinary("/tmp/out.j16");
+    writeBinary("../test/out.j16");
 
     file.close();
 
