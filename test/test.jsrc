@@ -1,12 +1,12 @@
-start:
+start: JUMP start
 	NOP
 	NOP
 	NOP
 	NOP
 
 MOV A, 10
-MOV B, -10
-MOV C, [B]
+;MOV B, -10
+;MOV C, [B]
 
 end:
 	JUMP end

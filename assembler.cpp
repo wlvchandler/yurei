@@ -52,57 +52,138 @@ static bool isNumber(const std::string& token, int16_t& value) {
     return isValid;
 }
 
+static std::string GetTokenType(TokenType tt) {
+    return (tt == TokenType::Opcode ? "Opcode" :
+        (tt == TokenType::Reg ? "Register" :
+            (tt == TokenType::ImmAddr ? "ImmAddr" :
+                (tt == TokenType::Label ? "Label" : "NONE"))));
+}
+
 bool Assembler::validateOperands() {
     bool valid = true;
-
-    auto expected = expectedOperands.find(std::get<std::string>(current_ins_line.mnemonic.value));
+    std::string& mnemonic = std::get<std::string>(current_ins_line.mnemonic.value);
+    std::cout << "Mnemonic value:" << mnemonic << std::endl;
+    auto expected = expectedOperands.find(mnemonic);
     if (expected == expectedOperands.end()) {
         std::cerr << "Unknown mnemonic\n";
         valid = false;
     }
 
     if (valid) {
+        valid = false;
+        std::cout << "Processing: " << mnemonic << std::endl;
+
         Token op1 = current_ins_line.operands.front();
         Token op2 = current_ins_line.operands.back();
 
-        if (!(expected->second.operand1 == op1.type && expected->second.operand2 == op2.type)) {
-            std::cerr << "Invalid operands for mnemonic\n";
-            valid = false;
+        //correct for labels
+        if (op1.type == TokenType::Label) {
+            op1.value = symbolTable[std::get<std::string>(current_ins_line.operands.front().value)];
+            op1.type = TokenType::ImmAddr;
         }
+
+        std::cout << "Found Operands: " << GetTokenType(op1.type) << ", " << GetTokenType(op2.type) << std::endl;
+
+        for (const auto& opcombo : expected->second.validCombinations) {
+            if (opcombo.first == op1.type && opcombo.second == op2.type) {
+                std::cout << "Match Operands: " << GetTokenType(opcombo.first) << ", " << GetTokenType(opcombo.second) << std::endl;
+                valid = true;
+                break;
+            }
+        }
+    }
+
+    if (!valid) {
+        std::cerr << "Invalid operands for mnemonic\n";
     }
 
     return valid;
 }
 
+static void printInstruction(InstructionLine& il) {
+    std::cout << std::get<std::string>(il.mnemonic.value) << " : ";
+
+    if (!il.operands.empty()) {
+        if (il.operands.front().type != TokenType::None && il.operands.front().type == TokenType::ImmAddr) {
+            std::cout << std::get<uint16_t>(il.operands.front().value);
+        }
+        else {
+            std::cout << std::get<std::string>(il.operands.front().value);
+        }
+    }
+    else std::cout << "-";
+
+    std::cout << " / ";
+
+    if (!il.operands.empty()) {
+        if (il.operands.back().type == TokenType::ImmAddr) {
+            std::cout << std::get<uint16_t>(il.operands.back().value);
+        }
+        else {
+            std::cout << std::get<std::string>(il.operands.back().value);
+        }
+    }
+    else std::cout << "-";
+
+    std::cout << std::endl;
+}
+
+
+
 void Assembler::generateBinary() {
+    std::cout << std::endl << std::endl << "Phase 2" << std::endl;
+    current_ins_line = {};
+    std::cout << std::hex;
     for (auto& instruction : instructions) {
+        current_ins_line = instruction;
+        std::cout << "Generating instruction: "; printInstruction(instruction);
+
         if (instruction.mnemonic.type == TokenType::Opcode && validateOperands()) {
-            binaryOut.push_back(std::get<uint16_t>(instruction.mnemonic.value));
+            std::string& mnemonic = std::get<std::string>(instruction.mnemonic.value);
+            uint16_t opcode = static_cast<uint16_t>(opcodes.at(mnemonic));
+
+            binaryOut.push_back(opcode);
+            std::cout << "Instruction: " << opcode << " ";
+
             for (auto& operand : instruction.operands) {
-                std::string label = std::get<std::string>(operand.value);
                 switch (operand.type) {
-                case TokenType::Reg:
-                case TokenType::ImmAddr: //fallthrough since operand.ia will always be false for ImmAddr
-                    binaryOut.push_back(std::get<uint16_t>(operand.value) | (operand.ia ? 0x8000 : 0));     
+                case TokenType::None:
                     break;
+                case TokenType::Reg:
+                {
+                    uint16_t operand_opcode = static_cast<uint16_t>(opcodes.at(std::get<std::string>(operand.value)));
+                    binaryOut.push_back(operand_opcode | (operand.ia ? 0x8000 : 0));
+                    std::cout << operand_opcode << " ";
+                    break;
+                }
+                case TokenType::ImmAddr:
+                {
+                    uint16_t immaddr = std::get<uint16_t>(operand.value);
+                    binaryOut.push_back(immaddr);
+                    std::cout << immaddr << " ";
+                    break;
+                }
                 case TokenType::Label:
-                    if (symbolTable.find(label) != symbolTable.end()) {
-                        binaryOut.push_back(symbolTable[label]);
+                    if (symbolTable.find(std::get<std::string>(operand.value)) != symbolTable.end()) {
+                        binaryOut.push_back(symbolTable[std::get<std::string>(operand.value)]);
+                        std::cout << symbolTable[std::get<std::string>(operand.value)] << " ";
                     }
                     else {
-                        std::cerr << "Label " << label << " not found" << std::endl;
+                        std::cerr << "Label " << std::get<std::string>(operand.value) << " not found" << std::endl;
                     }
                     break;
                 default:
-                    std::cerr << "Unknown operand type" << std::endl;
+                    std::cerr << "Unknown operand type";
                     break;
                 };
             }
         }
+        std::cout << std::endl;
     }
+    std::cout << std::dec;
 }
 
- void Assembler::parseToken(std::string token) {
+ void Assembler::parseToken(std::string& token) {
     Token t;
     t.value = token;
 
@@ -119,8 +200,12 @@ void Assembler::generateBinary() {
         auto it = opcodes.find(token);
         if (it != opcodes.end()) {
             t.type = TokenType::Opcode;
-            if (static_cast<uint16_t>(it->second) > 0x00F0) {
+            if (static_cast<uint16_t>(it->second) >= 0x00F0) {
                 t.type = TokenType::Reg;
+                std::cout << "\tRegister: " << std::get<std::string>(t.value) << std::endl;
+            }
+            else {
+                std::cout << "\tOpcode: " << std::get<std::string>(t.value) << std::endl;
             }
             parsed = true;
         }
@@ -132,6 +217,7 @@ void Assembler::generateBinary() {
         if (isNumber(token, immaddr)) {
             t.type = TokenType::ImmAddr;
             t.value = static_cast<uint16_t>(immaddr);
+            std::cout << "\tNumeric Literal: " << std::hex<<std::get<uint16_t>(t.value) << std::dec<<std::endl;
             parsed = true;
         }
     }
@@ -139,20 +225,25 @@ void Assembler::generateBinary() {
     // assume it's a label
     if (!parsed) {
         t.type = TokenType::Label;
+        std::cout << "\tLabel: " << std::get<std::string>(t.value) << std::endl;
     }
-    
-    if (current_ins_line.mnemonic.type == TokenType::None) {
+
+    std::cout << "\tVerify TokenType: " << GetTokenType(t.type) << std::endl;
+    if (t.type == TokenType::Opcode) {
         current_ins_line.mnemonic = t;
+        std::cout << "\t\tOpcode set: " << std::get<std::string>(current_ins_line.mnemonic.value) << std::endl;
     } else {
-        current_ins_line.operands.push_back(t);
+        int idx = !(current_ins_line.operands[0].type == TokenType::None);
+        current_ins_line.operands[idx] = t;
     }
+
+    token.clear();
 }
 
-std::vector<std::string> Assembler::tokenize(const std::string& line) {
-    std::vector<std::string> tokens;
+void Assembler::tokenize(const std::string& line) {
     std::string currentToken;
 
-    current_ins_line.mnemonic = {}; // refurbish
+    current_ins_line = {}; // refurbish
 
     static uint16_t current_address = 0;
     bool isLabel = false;
@@ -160,17 +251,20 @@ std::vector<std::string> Assembler::tokenize(const std::string& line) {
     for (char c : line + ' ') {
         if (c == ';') {
 	        if (!currentToken.empty()) {
+                std::cout << "Token found: " << currentToken << std::endl;
                 parseToken(currentToken);
 	        }
 	        break;
         }
         if (c == ':') {
+            std::cout << "Label found: " << currentToken << std::endl;
             symbolTable[currentToken] = current_address;
             currentToken.clear();
             isLabel = true;
             continue;
         }
         if ((c == ',' || isspace(c)) && !currentToken.empty()) {
+            std::cout << "Token found: " << currentToken << std::endl;
             parseToken(currentToken);
 	        continue;
         }
@@ -181,8 +275,6 @@ std::vector<std::string> Assembler::tokenize(const std::string& line) {
     if (!isLabel) {
         current_address++;
     }
-        
-    return tokens;
 }
 
 void Assembler::assemble(const std::string& f) {
@@ -194,10 +286,14 @@ void Assembler::assemble(const std::string& f) {
     std::string line;
     while (std::getline(file, line)) {
         tokenize(line);
+        if (current_ins_line.mnemonic.type != TokenType::None) {
+            std::cout << "\tAdding to instructions: ";  printInstruction(current_ins_line);
+            instructions.push_back(current_ins_line);
+        }
     }
-    generateBinary(); 
+    generateBinary();
 
-    std::cout << std::hex;
+    std::cout << std::endl << "------------------" << std::endl << std::hex;
     for (auto b : binaryOut) {
         std::cout <<  b << " ";
     }
