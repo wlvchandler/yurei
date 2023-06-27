@@ -40,7 +40,7 @@ class Assembler {
 	void generateBinary();
 	std::vector<std::string> tokenize(const std::string&); 
 	void parseToken(std::string);
-	bool validateInstructionLine();
+	bool validateOperands();
 
 	std::string filename;
 

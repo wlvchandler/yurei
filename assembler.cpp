@@ -52,81 +52,54 @@ static bool isNumber(const std::string& token, int16_t& value) {
     return isValid;
 }
 
-void Assembler::generateBinary() {
+bool Assembler::validateOperands() {
+    bool valid = true;
 
+    auto expected = expectedOperands.find(std::get<std::string>(current_ins_line.mnemonic.value));
+    if (expected == expectedOperands.end()) {
+        std::cerr << "Unknown mnemonic\n";
+        valid = false;
+    }
 
-    for (auto& instruction : instructions) {
-        // handle mnemonic
-        if (instruction.mnemonic.type == TokenType::Opcode) {
-            auto expected = expectedOperands.find(std::get<std::string>(instruction.mnemonic.value));
-            if (expected == expectedOperands.end()) {
-                std::cerr << "Unknown mnemonic\n";
-                return;
-            }
-        }
-        //in progress
+    if (valid) {
+        Token op1 = current_ins_line.operands.front();
+        Token op2 = current_ins_line.operands.back();
 
-        for (auto& operand : instruction.operands) {
-            switch (operand.type) {
-            case TokenType::Opcode:
-                break;
-            case TokenType::Reg:
-                break;
-            case TokenType::ImmAddr:
-                break;
-            case TokenType::Label:
-                break;
-            default:
-                break;
-            };
+        if (!(expected->second.operand1 == op1.type && expected->second.operand2 == op2.type)) {
+            std::cerr << "Invalid operands for mnemonic\n";
+            valid = false;
         }
     }
 
-    for (auto& token : pass1_tokens) {
-        if (token.empty()) {
-            continue;
-        }
-
-        // remove possible indirect addressing operator
-        bool ia = false;
-        if (token.front() == '[' && token.back() == ']') {
-            token = token.substr(1, token.size() - 2);
-            ia = true;
-        }
-
-        // immediate value/address [TODO: handle postfix notation]
-        int16_t lit;
-        if (isNumber(token, lit)) {
-            binaryOut.push_back(lit);
-            continue;
-        }
-
-        // Label [TODO: make sure labels are not the same name  as any known mnemonic]
-        if (symbolTable.find(token) != symbolTable.end()) {
-            binaryOut.push_back(symbolTable[token]);
-            continue;
-        }
-        
-        // Register TODO: separate from opcodes structure ?  
-                       
-        // Known mnemonic
-        auto it = opcodes.find(token);
-        if (it != opcodes.end()) {
-            binaryOut.push_back(static_cast<uint16_t>(it->second) | (ia ? 0x8000 : 0));
-        } else {
-            try {
-                binaryOut.push_back(std::stoi(token));
-            }
-            catch (const std::exception& e) {
-                std::cerr << "Error converting stoi: " << e.what() << std::endl; //TODO: logging
-            }
-        }
-    }
+    return valid;
 }
 
-
- bool Assembler::validateInstructionLine() {
-     return true;
+void Assembler::generateBinary() {
+    for (auto& instruction : instructions) {
+        if (instruction.mnemonic.type == TokenType::Opcode && validateOperands()) {
+            binaryOut.push_back(std::get<uint16_t>(instruction.mnemonic.value));
+            for (auto& operand : instruction.operands) {
+                std::string label = std::get<std::string>(operand.value);
+                switch (operand.type) {
+                case TokenType::Reg:
+                case TokenType::ImmAddr: //fallthrough since operand.ia will always be false for ImmAddr
+                    binaryOut.push_back(std::get<uint16_t>(operand.value) | (operand.ia ? 0x8000 : 0));     
+                    break;
+                case TokenType::Label:
+                    if (symbolTable.find(label) != symbolTable.end()) {
+                        binaryOut.push_back(symbolTable[label]);
+                    }
+                    else {
+                        std::cerr << "Label " << label << " not found" << std::endl;
+                    }
+                    break;
+                default:
+                    std::cerr << "Unknown operand type" << std::endl;
+                    break;
+                };
+            }
+        }
+    }
 }
 
  void Assembler::parseToken(std::string token) {
@@ -221,14 +194,16 @@ void Assembler::assemble(const std::string& f) {
     std::string line;
     while (std::getline(file, line)) {
         tokenize(line);
-        //for (auto s : tokenize(line)){
-        //    pass1_tokens.push_back(s);
-        //}
     }
-
     generateBinary(); 
-    writeBinary("../test/out.j16");
 
+    std::cout << std::hex;
+    for (auto b : binaryOut) {
+        std::cout <<  b << " ";
+    }
+    std::cout << "\n";
+
+    writeBinary("../test/out.j16");
     file.close();
 
 }
