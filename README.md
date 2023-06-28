@@ -59,8 +59,9 @@
 ## TODO
 
 ### Assembler:
-- Error checking
-- Better semantic validation
+- add keywords (section/segment access, etc)
+- add some special operators (@, in-line arithmetic, ...)
+- add some 'system calls' (printf, ...)
 
 ### Runtime:
 - ...
