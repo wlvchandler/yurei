@@ -5,6 +5,7 @@
 #include <cstdint>
 #include <fstream>
 #include <map>
+#include <stdexcept>
 #include <sstream>
 #include <string>
 #include <vector>
@@ -33,25 +34,25 @@ struct InstructionLine {
 
 
 class Assembler {
+	uint16_t current_address = 0;
+	std::unordered_map<std::string, uint16_t> symbolTable;
+	std::vector<InstructionLine> instructions;
+	InstructionLine current_ins_line;
+	std::vector<uint16_t> binaryOut;
+
 	void generateBinary();
+	void assign(const Token&);
 	void tokenize(const std::string&); 
 	void parseToken(std::string&);
 	bool validateOperands();
-
-	std::string filename;
-
+	void writeBOM(std::ofstream&);
+	void writeData(std::ofstream&, std::vector<uint16_t>&);
 
 public:
 	void assemble(const std::string&);
 	void writeBinary(const std::string&);
 
 private:
-	uint16_t current_address = 0;
-	std::unordered_map<std::string, uint16_t> symbolTable;
-	std::vector<std::string> pass1_tokens;
-	std::vector<InstructionLine> instructions;
-	InstructionLine current_ins_line;
-	std::vector<uint16_t> binaryOut;
 
 	const std::unordered_map<std::string, Mnemonic> opcodes =
 	{
