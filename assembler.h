@@ -40,11 +40,13 @@ class Assembler {
 
 	std::string filename;
 
+
 public:
 	void assemble(const std::string&);
 	void writeBinary(const std::string&);
 
 private:
+	uint16_t current_address = 0;
 	std::unordered_map<std::string, uint16_t> symbolTable;
 	std::vector<std::string> pass1_tokens;
 	std::vector<InstructionLine> instructions;

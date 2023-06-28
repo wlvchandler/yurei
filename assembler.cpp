@@ -185,13 +185,12 @@ void Assembler::generateBinary() {
 
  void Assembler::parseToken(std::string& token) {
     Token t;
-    t.value = token;
-
     // strip indirect address formatting
     if (token.front() == '[' && token.back() == ']') {
         token = token.substr(1, token.size() - 2);
         t.ia = true;
     }
+    t.value = token;
 
     bool parsed = false;
 
@@ -237,6 +236,7 @@ void Assembler::generateBinary() {
         current_ins_line.operands[idx] = t;
     }
 
+    current_address++;
     token.clear();
 }
 
@@ -245,8 +245,6 @@ void Assembler::tokenize(const std::string& line) {
 
     current_ins_line = {}; // refurbish
 
-    static uint16_t current_address = 0;
-    bool isLabel = false;
 
     for (char c : line + ' ') {
         if (c == ';') {
@@ -260,7 +258,6 @@ void Assembler::tokenize(const std::string& line) {
             std::cout << "Label found: " << currentToken << std::endl;
             symbolTable[currentToken] = current_address;
             currentToken.clear();
-            isLabel = true;
             continue;
         }
         if ((c == ',' || isspace(c)) && !currentToken.empty()) {
@@ -270,10 +267,6 @@ void Assembler::tokenize(const std::string& line) {
         }
         if (isspace(c)) { continue; }
         currentToken.push_back(c);
-    }
-
-    if (!isLabel) {
-        current_address++;
     }
 }
 
