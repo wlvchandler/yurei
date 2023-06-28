@@ -10,8 +10,25 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
 # Add source files
-file(GLOB_RECURSE SOURCE_FILES
-     "${CMAKE_SOURCE_DIR}/*.cpp"
-     "${CMAKE_SOURCE_DIR}/*.h")
+set(SOURCE_FILES
+    "jaskASM.cpp"
+    "jaskASM.h"
+    "memory.h"
+    "memory.cpp"
+    "isa.h"
+    "isa.cpp"
+    "runtime.h"
+    "runtime.cpp"
+    "assembler.h"
+    "assembler.cpp"
+    "device/device.h"
+    "device/device.cpp"
+    "device/gamepad.h"
+    "device/gamepad.cpp"
+    "utility/log.cpp"
+    "utility/log.h"
+    "utility/sysinfo.h"
+)
+
 
 add_executable(jaskASM ${SOURCE_FILES})
