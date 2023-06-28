@@ -19,7 +19,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
       
     - name: Install dependencies on Windows
       if: matrix.os == 'windows-2019'
@@ -30,9 +30,9 @@ jobs:
       shell: bash
       run: |
         if [[ "${{ matrix.os }}" == "windows-2019" ]]; then
-            cmake -B ${{github.workspace}}/build -G "Visual Studio 16 2019" -A x64 -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
+            cmake -B '${{github.workspace}}/build' -G "Visual Studio 16 2019" -A x64 -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
         else
-            cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
+            cmake -B '${{github.workspace}}/build' -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
         fi
       
     - name: Build
