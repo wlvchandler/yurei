@@ -1,3 +1,0 @@
-/home/will/yurei/build/CMakeFiles/jaskASM.dir
-/home/will/yurei/build/CMakeFiles/edit_cache.dir
-/home/will/yurei/build/CMakeFiles/rebuild_cache.dir

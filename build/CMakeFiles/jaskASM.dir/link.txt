@@ -1,1 +1,0 @@
-/usr/bin/c++ CMakeFiles/jaskASM.dir/jaskASM.cpp.o CMakeFiles/jaskASM.dir/memory.cpp.o CMakeFiles/jaskASM.dir/isa.cpp.o CMakeFiles/jaskASM.dir/runtime.cpp.o CMakeFiles/jaskASM.dir/assembler.cpp.o CMakeFiles/jaskASM.dir/device/device.cpp.o CMakeFiles/jaskASM.dir/device/gamepad.cpp.o CMakeFiles/jaskASM.dir/utility/log.cpp.o -o jaskASM 
