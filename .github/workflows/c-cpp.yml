@@ -33,9 +33,3 @@ jobs:
       run: |
           cmake -S . -B build -G "${{ matrix.cmake_generator }}"
           cmake --build build
-
-#    - name: Run tests
-#      shell: bash
-#      run: |
-#          cd build
-#          ctest --output-on-failure
