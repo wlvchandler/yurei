@@ -8,10 +8,13 @@ using namespace std;
 int main() {
     std::filesystem::path cwd = std::filesystem::current_path();
     std::filesystem::path filePath = cwd / "../test/test.jsrc";
-
-    logger::info << "Initializing Assembler" << std::endl;
-    Assembler ASM;   
-    ASM.assemble(filePath.string());
+    
+    try {
+        logger::info << "Initializing Assembler" << std::endl;
+        Assembler().assemble(filePath.string());
+    } catch (std::runtime_error& e) {
+        std::cerr << e.what() << std::endl;
+    }
 
     //logger::info << "Initializing Runtime" << std::endl;
     //Runtime app;
