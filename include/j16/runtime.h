@@ -1,9 +1,10 @@
 #pragma once
 
-#include "utility/sysinfo.h"
-#include "isa.h"
-#include "memory.h"
-#include "device/gamepad.h"
+
+#include <j16/sysinfo.h>
+#include <j16/isa.h>
+#include <j16/memory.h>
+#include <j16/gamepad.h>
 #include <cstdint>
 
 class Runtime {

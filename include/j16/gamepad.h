@@ -1,5 +1,5 @@
 #pragma once
-#include "device.h"
+#include <j16/device.h>
 #include <cstdint>
 
 class Button {

@@ -1,6 +1,7 @@
 #pragma once
 
-#include "memory.h"
+#include <j16/memory.h>
+
 #include <cstdint>
 #include <vector>
 #include <iostream>

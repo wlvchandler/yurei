@@ -1,4 +1,4 @@
-#include "assembler.h"
+#include <j16/assembler.h>
 
 // byte order mark
 void Assembler::writeBOM(std::ofstream& ofs) {
@@ -203,7 +203,10 @@ void Assembler::assemble(const std::string& f) {
         }
     }
     generateBinary();
-    writeBinary("../test/out.j16");
+
+    std::filesystem::path cwd = std::filesystem::current_path();
+    std::filesystem::path filePath = cwd / TESTS_DIR;
+    writeBinary(filePath.string() + "/out.j16");
 
     // DEBUG -- print out generated code
     int i = 0;
