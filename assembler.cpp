@@ -1,12 +1,12 @@
 #include "assembler.h"
 
 // byte order mark
- void Assembler::writeBOM(std::ofstream& ofs) {
+void Assembler::writeBOM(std::ofstream& ofs) {
     uint16_t BOM = isSystemLittleEndian() ? 0xFFFE : 0xFEFF;
     ofs.write(reinterpret_cast<const char*>(&BOM), sizeof(BOM));
 }
 
- void Assembler::writeData(std::ofstream& ofs, std::vector<uint16_t>& data) {
+void Assembler::writeData(std::ofstream& ofs, std::vector<uint16_t>& data) {
     ofs.write(reinterpret_cast<const char*>(data.data()), data.size() * sizeof(uint16_t));
 }
 
