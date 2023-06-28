@@ -57,11 +57,12 @@ private:
 	{
 		{"NOP",  Mnemonic::NOP},  {"HALT",  Mnemonic::HALT},
 		{"LOAD", Mnemonic::LOAD}, {"STORE", Mnemonic::STORE}, {"MOV", Mnemonic::MOV}, {"PUSH", Mnemonic::PUSH}, {"POP", Mnemonic::POP},
-		{"ADD",  Mnemonic::ADD},  {"SUB",   Mnemonic::SUB},   {"MUL", Mnemonic::MUL}, {"DIV",  Mnemonic::DIV},
-		{"AND",  Mnemonic::AND},  {"OR",    Mnemonic::OR},    {"XOR", Mnemonic::XOR}, {"NOT",  Mnemonic::NOT},
+		{"ADD",  Mnemonic::ADD},  {"SUB",   Mnemonic::SUB},   {"MUL", Mnemonic::MUL}, {"SMUL", Mnemonic::SMUL}, {"DIV",  Mnemonic::DIV}, {"SDIV",  Mnemonic::SDIV},
+		{"AND",  Mnemonic::AND},  {"OR",    Mnemonic::OR},    {"XOR", Mnemonic::XOR}, {"NOT",  Mnemonic::NOT},  {"SHR", Mnemonic::SHR},  {"SHL", Mnemonic::SHL},
 		{"JUMP", Mnemonic::JUMP}, {"JZ",    Mnemonic::JZ},    {"JNZ", Mnemonic::JNZ}, {"JC",   Mnemonic::JC},   {"JNC", Mnemonic::JNC},
 		{"CALL", Mnemonic::CALL}, {"RET",   Mnemonic::RET},
-		{"A",    Mnemonic::A},    {"B",     Mnemonic::B},     {"C",   Mnemonic::C},   {"D",    Mnemonic::D}
+		{"A",    Mnemonic::A},    {"B",     Mnemonic::B},     {"C",   Mnemonic::C},   {"D",    Mnemonic::D}, {"I",   Mnemonic::I},   {"J",    Mnemonic::J},
+		{"SP",   Mnemonic::SP},   {"PC",    Mnemonic::PC}, {"FLAGS",   Mnemonic::FLAGS}
 	};
 
 	const std::unordered_map<std::string, ExpectedOperands> expectedOperands = {

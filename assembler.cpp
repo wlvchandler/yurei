@@ -62,7 +62,6 @@ static std::string GetTokenType(TokenType tt) {
 bool Assembler::validateOperands() {
     bool valid = true;
     std::string& mnemonic = std::get<std::string>(current_ins_line.mnemonic.value);
-    std::cout << "Mnemonic value:" << mnemonic << std::endl;
     auto expected = expectedOperands.find(mnemonic);
     if (expected == expectedOperands.end()) {
         std::cerr << "Unknown mnemonic\n";
@@ -71,7 +70,6 @@ bool Assembler::validateOperands() {
 
     if (valid) {
         valid = false;
-        std::cout << "Processing: " << mnemonic << std::endl;
 
         Token op1 = current_ins_line.operands.front();
         Token op2 = current_ins_line.operands.back();
@@ -82,11 +80,8 @@ bool Assembler::validateOperands() {
             op1.type = TokenType::ImmAddr;
         }
 
-        std::cout << "Found Operands: " << GetTokenType(op1.type) << ", " << GetTokenType(op2.type) << std::endl;
-
         for (const auto& opcombo : expected->second.validCombinations) {
             if (opcombo.first == op1.type && opcombo.second == op2.type) {
-                std::cout << "Match Operands: " << GetTokenType(opcombo.first) << ", " << GetTokenType(opcombo.second) << std::endl;
                 valid = true;
                 break;
             }
@@ -131,19 +126,15 @@ static void printInstruction(InstructionLine& il) {
 
 
 void Assembler::generateBinary() {
-    std::cout << std::endl << std::endl << "Phase 2" << std::endl;
     current_ins_line = {};
-    std::cout << std::hex;
     for (auto& instruction : instructions) {
         current_ins_line = instruction;
-        std::cout << "Generating instruction: "; printInstruction(instruction);
 
         if (instruction.mnemonic.type == TokenType::Opcode && validateOperands()) {
             std::string& mnemonic = std::get<std::string>(instruction.mnemonic.value);
             uint16_t opcode = static_cast<uint16_t>(opcodes.at(mnemonic));
 
             binaryOut.push_back(opcode);
-            std::cout << "Instruction: " << opcode << " ";
 
             for (auto& operand : instruction.operands) {
                 switch (operand.type) {
@@ -151,25 +142,19 @@ void Assembler::generateBinary() {
                     break;
                 case TokenType::Reg:
                 {
-                    uint16_t operand_opcode = static_cast<uint16_t>(opcodes.at(std::get<std::string>(operand.value)));
-                    binaryOut.push_back(operand_opcode | (operand.ia ? 0x8000 : 0));
-                    std::cout << operand_opcode << " ";
+                    uint16_t regop = static_cast<uint16_t>(opcodes.at(std::get<std::string>(operand.value)));
+                    binaryOut.push_back(regop | (operand.ia ? 0x8000 : 0));
                     break;
                 }
                 case TokenType::ImmAddr:
                 {
                     uint16_t immaddr = std::get<uint16_t>(operand.value);
                     binaryOut.push_back(immaddr);
-                    std::cout << immaddr << " ";
                     break;
                 }
                 case TokenType::Label:
                     if (symbolTable.find(std::get<std::string>(operand.value)) != symbolTable.end()) {
                         binaryOut.push_back(symbolTable[std::get<std::string>(operand.value)]);
-                        std::cout << symbolTable[std::get<std::string>(operand.value)] << " ";
-                    }
-                    else {
-                        std::cerr << "Label " << std::get<std::string>(operand.value) << " not found" << std::endl;
                     }
                     break;
                 default:
@@ -178,9 +163,7 @@ void Assembler::generateBinary() {
                 };
             }
         }
-        std::cout << std::endl;
     }
-    std::cout << std::dec;
 }
 
  void Assembler::parseToken(std::string& token) {
@@ -201,10 +184,6 @@ void Assembler::generateBinary() {
             t.type = TokenType::Opcode;
             if (static_cast<uint16_t>(it->second) >= 0x00F0) {
                 t.type = TokenType::Reg;
-                std::cout << "\tRegister: " << std::get<std::string>(t.value) << std::endl;
-            }
-            else {
-                std::cout << "\tOpcode: " << std::get<std::string>(t.value) << std::endl;
             }
             parsed = true;
         }
@@ -216,7 +195,6 @@ void Assembler::generateBinary() {
         if (isNumber(token, immaddr)) {
             t.type = TokenType::ImmAddr;
             t.value = static_cast<uint16_t>(immaddr);
-            std::cout << "\tNumeric Literal: " << std::hex<<std::get<uint16_t>(t.value) << std::dec<<std::endl;
             parsed = true;
         }
     }
@@ -224,13 +202,10 @@ void Assembler::generateBinary() {
     // assume it's a label
     if (!parsed) {
         t.type = TokenType::Label;
-        std::cout << "\tLabel: " << std::get<std::string>(t.value) << std::endl;
     }
 
-    std::cout << "\tVerify TokenType: " << GetTokenType(t.type) << std::endl;
     if (t.type == TokenType::Opcode) {
         current_ins_line.mnemonic = t;
-        std::cout << "\t\tOpcode set: " << std::get<std::string>(current_ins_line.mnemonic.value) << std::endl;
     } else {
         int idx = !(current_ins_line.operands[0].type == TokenType::None);
         current_ins_line.operands[idx] = t;
@@ -245,23 +220,19 @@ void Assembler::tokenize(const std::string& line) {
 
     current_ins_line = {}; // refurbish
 
-
     for (char c : line + ' ') {
         if (c == ';') {
 	        if (!currentToken.empty()) {
-                std::cout << "Token found: " << currentToken << std::endl;
                 parseToken(currentToken);
 	        }
 	        break;
         }
         if (c == ':') {
-            std::cout << "Label found: " << currentToken << std::endl;
             symbolTable[currentToken] = current_address;
             currentToken.clear();
             continue;
         }
         if ((c == ',' || isspace(c)) && !currentToken.empty()) {
-            std::cout << "Token found: " << currentToken << std::endl;
             parseToken(currentToken);
 	        continue;
         }
@@ -280,18 +251,10 @@ void Assembler::assemble(const std::string& f) {
     while (std::getline(file, line)) {
         tokenize(line);
         if (current_ins_line.mnemonic.type != TokenType::None) {
-            std::cout << "\tAdding to instructions: ";  printInstruction(current_ins_line);
             instructions.push_back(current_ins_line);
         }
     }
     generateBinary();
-
-    std::cout << std::endl << "------------------" << std::endl << std::hex;
-    for (auto b : binaryOut) {
-        std::cout <<  b << " ";
-    }
-    std::cout << "\n";
-
     writeBinary("../test/out.j16");
     file.close();
 
