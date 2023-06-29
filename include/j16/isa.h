@@ -55,5 +55,4 @@ public:
 
 private:
     std::vector<OpcodeFunction> instructions;
-    Memory* main_memory;
 };
