@@ -1,7 +1,6 @@
 #pragma once
 #include <j16/j16.h>
 #include <j16/sysinfo.h>
-#include <j16/isa.h>
 
 #include <filesystem>
 #include <cstdint>

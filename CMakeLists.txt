@@ -46,13 +46,15 @@ set(ASM_FILES
 )
 
 set(RUNTIME_FILES
+    "src/j16/j16ps.cpp"
     "include/j16/runtime.h"
     "src/j16/runtime.cpp"
+    "include/j16/memory.h"
+    "src/memory.cpp"
+    "include/j16/isa.h"
+    "src/isa.cpp"
 )
-
 
 add_executable(jaskASM ${SOURCE_FILES})
 add_executable(j16asm ${UTIL_FILES} ${ASM_FILES})
-
- #enable later
-#add_executable(j16ps  ${UTIL_FILES} ${RUNTIME_FILES})
+add_executable(j16ps  ${UTIL_FILES} ${RUNTIME_FILES})
