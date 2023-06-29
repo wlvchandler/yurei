@@ -1,4 +1,19 @@
-# Basic Opcodes
+## Build
+### Dependencies
+#### SDL (only required for screen output)
+##### Linux
+`sudo apt install libsdl2-dev`
+or
+
+##### Mac
+Install Homebrew if you don't have it:
+`/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"`
+Then install
+`brew install sdl2`
+
+
+## Documentation
+### Basic Opcodes
 
 | Mnemonic | Operands     | Opcode | Operand1 | Operand2 |
 |----------|--------------|--------|----------|----------|
@@ -29,7 +44,7 @@
 | CALL     | ADDR         | 0x0040 | ADDR     | -        |
 | RET      | -            | 0x0041 | -        | -        |
 
-# Registers
+### Registers
 
 | Register | Opcode | Operand1 | Operand2 |
 |----------|--------|----------|----------|
@@ -43,7 +58,7 @@
 | PC       | 0x00F7 | -        | -        |
 | FLAGS    | 0x00F8 | -        | -        |
 
-# Reserved Keywords
+### Reserved Keywords (planned/todo)
 
 - SECTION
 - .DATA
@@ -52,7 +67,7 @@
 - .SWAP
 - .ROM
 
-# Shortcuts
+### Shortcuts
 
 - @: Current address (PC?)
 

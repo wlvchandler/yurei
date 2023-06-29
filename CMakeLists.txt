@@ -10,6 +10,13 @@ add_definitions( -DTEST_FILE_DIR="${CMAKE_CURRENT_SOURCE_DIR}/test")
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
 
+#if (WIN32)
+#    set(SDL2_LIBRARY_PATH "${CMAKE_CURRENT_SOURCE_DIR}/extern/SDL2.lib") 
+#elseif (UNIX)
+#    set(SDL2_LIBRARY_PATH "${CMAKE_CURRENT_SOURCE_DIR}/extern/SDL2.a") 
+# endif()
+
+
 # Add source files
 set(SOURCE_FILES
     "src/yurei.cpp"

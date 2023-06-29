@@ -9,5 +9,5 @@ if (!(Test-Path -Path $binDir -PathType Container)) {
     New-Item -ItemType Directory -Path $binDir -Force | Out-Null
 }
 
-New-Item -ItemType SymbolicLink -Path "$binDir/j16" -Target "$buildDir/bin/jaskASM" -Force | Out-Null
+New-Item -ItemType SymbolicLink -Path "$binDir/yurei" -Target "$buildDir/bin/yurei" -Force | Out-Null
 
