@@ -2,8 +2,37 @@
 ### Dependencies
 #### SDL (only required for screen output)
 ##### Linux
-`sudo apt install libsdl2-dev`
-or
+```
+## apt
+sudo apt update
+sudo apt install libsdl2-dev
+
+## dnf/yum
+sudo dnf install SDL2-devel
+sudo yum install SDL2-devel
+
+## pacman
+sudo pacman -S sdl2
+
+## zypper
+sudo zypper install libSDL2-devel
+
+# Alternatively, from source:
+## dependencies depend on distro, here's an idea of what you might need:
+sudo apt-get install build-essential
+sudo dnf/yum groupinstall "Development Tools"
+sudo pacman -S base-devel
+## you may also need: libfontconfig1-dev libfreetype6-dev libgl1-mesa-dev libglew-dev libglu1-mesa-dev
+
+
+wget https://github.com/libsdl-org/SDL/releases/download/release-2.28.0/SDL2-2.28.0.tar.gz
+tar -xzf SDL2-2.28.0.tar.gz
+cd SDL2-2.28.0
+./configure
+make
+sudo make install # for global install
+```
+
 
 ##### Mac
 Install Homebrew if you don't have it:
