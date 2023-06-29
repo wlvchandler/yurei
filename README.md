@@ -66,3 +66,9 @@
 ### Runtime:
 - ...
 
+### Screen
+- TFT LCD screen (240x240 or 240x160)
+- emulate SPI communication (simulate SPI data transfer)
+- draw graphics in frame buffer then block image transfer to vscreen
+- 60hz refresh
+- color depth/palette modes
