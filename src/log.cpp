@@ -1,4 +1,4 @@
-#include "log.h"
+#include <j16/log.h>
 
 namespace logger {
     Logger logInstance("../out/log.txt");

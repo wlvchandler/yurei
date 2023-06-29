@@ -1,4 +1,4 @@
-#include "isa.h"
+#include <j16/isa.h>
 
 Opcode::Opcode() {
     main_memory = Memory::getInstance();

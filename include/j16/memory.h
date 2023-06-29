@@ -1,7 +1,7 @@
 #pragma once
 
-#include "utility/log.h"
-#include "isa.h"
+#include <j16/log.h>
+#include <j16/isa.h>
 
 #include  <iostream>
 #include  <iomanip>

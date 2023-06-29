@@ -1,4 +1,4 @@
-#include "runtime.h"
+#include <j16/runtime.h>
 
 static uint16_t readBOM(std::ifstream& ifs) {
 	uint16_t BOM;

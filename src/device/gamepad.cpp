@@ -1,5 +1,4 @@
-#include "gamepad.h"
-
+#include <j16/gamepad.h>
 
 Button::Button(uint16_t s) : signal(s) {}
 Button::~Button() {}
