@@ -1,7 +1,5 @@
 #pragma once
 
-#include <j16/memory.h>
-
 #include <cstdint>
 #include <vector>
 #include <iostream>
@@ -65,5 +63,4 @@ public:
 
 private:
     std::vector<OpcodeFunction> instructions;
-    Memory* main_memory;
 };
