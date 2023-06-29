@@ -36,7 +36,7 @@ static bool isNumber(const std::string& token, int16_t& value) {
             localToken = localToken.substr(2);
         }
         size_t pos;
-        uint16_t _v = std::stoul(localToken.c_str(), &pos, hex ? 16 : (oct ? 8 : (bin ? 2 : 10)));
+        uint16_t _v = static_cast<uint16_t>(std::stoul(localToken.c_str(), &pos, hex ? 16 : (oct ? 8 : (bin ? 2 : 10))));
         if (pos != localToken.size() || _v > (sign == -1 ? 0x8000 : 0xFFFF)) {
             isValid = false;
         } else {
