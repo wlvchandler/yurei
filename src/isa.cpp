@@ -1,7 +1,7 @@
 #include <j16/isa.h>
 
 Opcode::Opcode() {
-    main_memory = Memory::getInstance();
+    //   main_memory = Memory::getInstance();
     for (const auto& func : opcodeFunctions) {
         instructions.push_back(func);
     }

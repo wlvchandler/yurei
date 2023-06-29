@@ -38,6 +38,7 @@ set(UTIL_FILES
 )
 
 set(ASM_FILES
+    "src/j16asm/j16asm.cpp"
     "include/j16/isa.h"
     "src/isa.cpp"
     "src/j16asm/assembler.cpp"
@@ -51,7 +52,7 @@ set(RUNTIME_FILES
 
 
 add_executable(jaskASM ${SOURCE_FILES})
+add_executable(j16asm ${UTIL_FILES} ${ASM_FILES})
 
  #enable later
-#add_executable(j16asm ${UTIL_FILES} ${ASM_FILES})
 #add_executable(j16ps  ${UTIL_FILES} ${RUNTIME_FILES})

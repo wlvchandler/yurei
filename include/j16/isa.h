@@ -6,8 +6,6 @@
 #include <vector>
 #include <iostream>
 
-class Memory;
-
 // mnemonics
 enum class Mnemonic : uint16_t {
     N_OPCODES = 26,
