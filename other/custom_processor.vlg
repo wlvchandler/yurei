@@ -1,0 +1,60 @@
+module CustomProcessor (
+    input clk,            // Clock signal
+    input reset,          // Reset signal
+    input [15:0] instruction,  // 16-bit instruction input
+    output reg [7:0] A, B, C, D, I, J, SP, PC, FLAGS  // 8-bit registers
+);
+
+// State enumeration
+typedef enum {IDLE, FETCH, EXECUTE} state_t;
+
+// State registers
+reg [1:0] state, next_state;
+
+// Instruction fields
+reg [15:0] opcode;
+reg [7:0] operand1, operand2;
+
+
+// Main state machine
+always @(posedge clk or posedge reset) begin
+    if (reset) begin
+        state <= IDLE;
+        A <= 8'b0;
+        // Initialize other registers...
+    end else begin
+        state <= next_state;
+
+        // Fetch & Decode
+        if (next_state == FETCH) begin
+            opcode = instruction[15:8];
+            operand1 = instruction[7:4];
+            operand2 = instruction[3:0];
+        end
+        
+        // Execute
+        if (next_state == EXECUTE) begin
+            case (opcode)
+                16'h0000: begin /* NOP */ end
+                16'h0001: begin /* HALT */ end
+                16'h000A: begin /* LOAD */ end
+                // opcodes
+                default: begin /* Invalid opcode */ end
+            endcase
+        end
+    end
+end
+
+// Next state logic
+always @(*) begin
+    case (state)
+        IDLE:
+            next_state = FETCH;
+        FETCH:
+            next_state = EXECUTE;
+        EXECUTE:
+            next_state = IDLE;
+    endcase
+end
+
+endmodule

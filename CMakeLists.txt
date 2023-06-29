@@ -12,8 +12,8 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 # Add source files
 set(SOURCE_FILES
-    "src/jaskASM.cpp"
-    "include/j16/jaskASM.h"
+    "src/yurei.cpp"
+    "include/j16/yurei.h"
     "include/j16/memory.h"
     "src/memory.cpp"
     "include/j16/isa.h"
