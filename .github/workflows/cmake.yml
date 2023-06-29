@@ -19,6 +19,18 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
     - uses: actions/checkout@v3
+    - name: Install dependencies
+      shell: bash
+      run: |
+        if [[ "${{ matrix.os }}" == "ubuntu-latest" ]]; then
+          sudo apt-get install -y libasound2-dev libudev-dev libdbus-1-dev
+        elif [[ "${{ matrix.os }}" == "macos-latest" ]]; then
+          brew install sdl2
+        elif [[ "${{ matrix.os }}" == "windows-latest" ]]; then
+          vcpkg integrate install
+          vcpkg install sdl2:x64-windows
+        fi
+
     - name: Configure CMake
       shell: bash
       run: |

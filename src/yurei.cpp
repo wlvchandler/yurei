@@ -1,10 +1,6 @@
-﻿#include <j16/yurei.h>
+﻿#include <j16/j16.h>
+#include <SDL.h>
 
-#include <filesystem>
-
-using namespace std;
-
-
-int main() {
+int SDL_main(int argc, char* argv[]) {
     return 0;
 }
