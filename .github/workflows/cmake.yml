@@ -1,12 +1,20 @@
-name: CMake
+name: build
 
 on:
   push:
     branches:
       - master
+    paths:
+      - 'src/**'
+      - 'include/**'
+      - 'CMakeLists.txt'
   pull_request:
     branches:
       - master
+    paths:
+      - 'src/**'
+      - 'include/**'
+      - 'CMakeLists.txt'
 
 env:
   BUILD_TYPE: Release
@@ -19,6 +27,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
     - uses: actions/checkout@v3
+  
     - name: Install dependencies
       shell: bash
       run: |
@@ -31,6 +40,14 @@ jobs:
           vcpkg install sdl2:x64-windows
         fi
 
+    - name: Cache build files
+      uses: actions/cache@v2
+      with:
+        path: build
+        key: ${{ runner.os }}-build-${{ hashFiles('src/*.cpp', src/*/*.cpp, 'include/*.h', 'CMakeLists.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-build-
+
     - name: Configure CMake
       shell: bash
       run: |
@@ -39,6 +56,7 @@ jobs:
         else
             cmake -B '${{github.workspace}}/build' -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
         fi
+
     - name: Build
       shell: bash
       run: cmake --build '${{github.workspace}}/build' --config ${{env.BUILD_TYPE}}

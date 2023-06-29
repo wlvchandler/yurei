@@ -1,3 +1,5 @@
+![Build Status](https://github.com/wlvchandler/yurei/actions/workflows/cmake.yml/badge.svg)
+
 ## Build
 ### Dependencies
 #### SDL (only required for screen output)
