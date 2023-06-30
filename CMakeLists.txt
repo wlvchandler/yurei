@@ -29,12 +29,8 @@ add_executable(j16asm "src/j16asm/j16asm.cpp"
 )
 
 # hardware runtime
-add_executable(j16ps "src/j16ps/j16ps.cpp"
+add_executable(yurei "src/yurei.cpp"  
 	${src_common} ${src_hardware} ${src_runtime}  ${src_isa}  
 )
 
-# yurei emulator
-add_executable(yurei "src/yurei.cpp"  
-	${src_common}
-)
 target_link_libraries(yurei PRIVATE SDL2::SDL2 SDL2::SDL2main)
