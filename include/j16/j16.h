@@ -2,6 +2,7 @@
 
 #include <cstdint>
 #include <iostream>
+#include <stdexcept>
 
 #ifdef TEST_FILE_DIR
 #define TESTS_DIR TEST_FILE_DIR

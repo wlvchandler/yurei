@@ -24,7 +24,7 @@ set(src_hardware  ${src_memory} ${src_device} ${src_gamepad} )
 
 #### build targets
 # assembler
-add_executable(j16asm "src/j16asm/j16asm.cpp"
+add_executable(oni16 "src/j16asm/j16asm.cpp"
 	${src_common} ${src_assembler} ${src_isa} 
 )
 
