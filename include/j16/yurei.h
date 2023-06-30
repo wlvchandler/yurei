@@ -4,11 +4,9 @@
 #pragma once
 
 #include <iostream>
+#include <j16/assembler.h>
 #include <j16/j16.h>
 #include <j16/log.h>
-#include <j16/assembler.h>
 #include <j16/runtime.h>
-
-
 
 // TODO: Reference additional headers your program requires here.
