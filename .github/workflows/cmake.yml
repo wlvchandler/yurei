@@ -40,14 +40,6 @@ jobs:
           vcpkg install sdl2:x64-windows
         fi
 
-    - name: Cache build files
-      uses: actions/cache@v2
-      with:
-        path: build
-        key: ${{ runner.os }}-build-${{ hashFiles('src/*.cpp', src/*/*.cpp, 'include/*.h', 'CMakeLists.txt') }}
-        restore-keys: |
-          ${{ runner.os }}-build-
-
     - name: Configure CMake
       shell: bash
       run: |
