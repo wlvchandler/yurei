@@ -3,8 +3,8 @@
 #include <j16/j16.h>
 
 #include <cstdint>
-#include <vector>
 #include <iostream>
+#include <vector>
 
 class Memory;
 
@@ -38,20 +38,16 @@ class Opcode {
 
     using OpcodeFunction = void (Opcode::*)();
     static constexpr OpcodeFunction opcodeFunctions[] = {
-        &Opcode::NOP, &Opcode::HALT, 
-        &Opcode::LOAD, &Opcode::STORE, &Opcode::MOV,
-        &Opcode::ADD, &Opcode::SUB, &Opcode::MUL, &Opcode::SMUL, &Opcode::DIV, &Opcode::SDIV,
-        &Opcode::AND, &Opcode::OR, &Opcode::XOR, &Opcode::NOT, &Opcode::SHR, &Opcode::SHL,
-        &Opcode::JUMP, &Opcode::JZ, &Opcode::JNZ, &Opcode::JC, &Opcode::JNC,
-        &Opcode::CALL, &Opcode::RET, &Opcode::PUSH, &Opcode::POP
+        &Opcode::NOP, &Opcode::HALT, &Opcode::LOAD, &Opcode::STORE, &Opcode::MOV, &Opcode::ADD, &Opcode::SUB,
+        &Opcode::MUL, &Opcode::SMUL, &Opcode::DIV,  &Opcode::SDIV,  &Opcode::AND, &Opcode::OR,  &Opcode::XOR,
+        &Opcode::NOT, &Opcode::SHR,  &Opcode::SHL,  &Opcode::JUMP,  &Opcode::JZ,  &Opcode::JNZ, &Opcode::JC,
+        &Opcode::JNC, &Opcode::CALL, &Opcode::RET,  &Opcode::PUSH,  &Opcode::POP
     };
-
-public:
+  public:
     Opcode();
     ~Opcode();
 
     void load(unsigned short);
-
-private:
+  private:
     std::vector<OpcodeFunction> instructions;
 };

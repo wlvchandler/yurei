@@ -4,13 +4,13 @@ Memory* Memory::instance_ = nullptr;
 
 Memory::Memory() {
     static size_t n = 0;
-    std::cout<< n++ << " - " << __FUNCTION__ << std::endl;
+    std::cout << n++ << " - " << __FUNCTION__ << std::endl;
     using namespace REGISTERS;
     address_space = new uint16_t[ADDRESS_SPACE_SIZE]();
-    registers     = new uint16_t[7]();
+    registers = new uint16_t[NUM_REGISTERS]();
 
     registers[SP] = 0x9fff;
-    registers[PC] = 0x0; //update to start of program code segment.
+    registers[PC] = 0x0; // update to start of program code segment.
 }
 
 Memory::~Memory() {
@@ -26,7 +26,6 @@ Memory* Memory::getInstance() {
     }
     return instance_;
 }
-
 
 void Memory::initializeSegments() {
     logger::info << "Defining memory segments\n";
@@ -46,40 +45,38 @@ uint16_t Memory::get_pc() const {
     return this->registers[REGISTERS::PC];
 }
 
-//VBlank:  (triggered when display is done refreshing) - actions like updating the VRAM while the screen is not drawing.
-//Timer:    triggered when the Timer Counter overflows.
-//LCD STAT: triggered when there are changes in the LCD status. This could include mode changes like transitioning from VBlank to HBlank.
-//Serial Transfer Completion Interrupt
-//Joypad  : when there's a state change in the joypad buttons (pressed)
+// VBlank:  (triggered when display is done refreshing) - actions like updating the VRAM while the screen is not
+// drawing. Timer:    triggered when the Timer Counter overflows. LCD STAT: triggered when there are changes in the LCD
+// status. This could include mode changes like transitioning from VBlank to HBlank. Serial Transfer Completion
+// Interrupt Joypad  : when there's a state change in the joypad buttons (pressed)
 void Memory::check_for_interrupts() {
     using REGISTERS::PC;
 
-    if (this->address_space[0x0040] & 0x01) { //VBlank
-        //push_to_stack(this->registers[PC]);
-        //this->registers[PC] = 0x0100;
+    if (this->address_space[0x0040] & 0x01) { // VBlank
+        // push_to_stack(this->registers[PC]);
+        // this->registers[PC] = 0x0100;
     }
 
     if (this->address_space[0x0048] & 0x01) { // Timer
-        //push_to_stack(this->registers[PC]);
-        //this->registers[PC] = 0x0100;
+        // push_to_stack(this->registers[PC]);
+        // this->registers[PC] = 0x0100;
     }
 
     if (this->address_space[0x0050] & 0x01) { // LCD
-        //push_to_stack(this->registers[PC]);
-        //this->registers[PC] = 0x0100;
+        // push_to_stack(this->registers[PC]);
+        // this->registers[PC] = 0x0100;
     }
 
     if (this->address_space[0x0058] & 0x01) { // STC
-        //push_to_stack(this->registers[PC]);
-        //this->registers[PC] = 0x0100;
+        // push_to_stack(this->registers[PC]);
+        // this->registers[PC] = 0x0100;
     }
 
     if (this->address_space[0x0060] & 0x01) { // STC
-        //push_to_stack(this->registers[PC]);
-        //this->registers[PC] = 0x0100;
+        // push_to_stack(this->registers[PC]);
+        // this->registers[PC] = 0x0100;
     }
 }
-
 
 uint16_t Memory::execute_memory() {
     using namespace REGISTERS;
@@ -96,8 +93,8 @@ uint16_t Memory::execute_memory() {
         this->increment_pc();
     }
 
-    if (exit_code != 0){}
-    dump();// DEBUG
+    if (exit_code != 0) {}
+    dump(); // DEBUG
 
     return exit_code;
 }
@@ -113,24 +110,22 @@ void Memory::increment_pc() {
         this->registers[PC]++;
 
         std::cout << "PC now " << this->registers[PC] << "\n";
-    }
-    else {
+    } else {
         // handle
     }
 }
 
-
-Segment::Segment(uint16_t start, uint16_t end) : start(start), size(end-start+1) {
+Segment::Segment(uint16_t start, uint16_t end) : start(start), size(end - start + 1) {
     base = &(Memory::getInstance()->getMemory()[start]);
 }
 
-Segment::~Segment(){}
+Segment::~Segment() {}
 
 uint16_t Segment::read(uint16_t address) {
     if (address < size) {
         return base[address];
     } else {
-      throw std::out_of_range("MemRead error: Address is out of range for this segment");
+        throw std::out_of_range("MemRead error: Address is out of range for this segment");
     }
 }
 
@@ -141,10 +136,6 @@ void Segment::write(uint16_t address, uint16_t data) {
         throw std::out_of_range("MemWrite error: Address is out of range for this segment");
     }
 }
-
-
-
-
 
 static void print_registers(uint16_t* registers) {
     using namespace REGISTERS;
@@ -175,21 +166,21 @@ static void print_address_space(uint16_t* address_space, uint16_t sz = 65535) {
     unsigned cols = 16;
     unsigned rows = ((sz + 1) / cols);
     for (size_t i = 0; i < rows; i++) {
-        std::cout  << "0x" << std::setfill('0') << std::setw(2) << i*cols << "\t";
+        std::cout << "0x" << std::setfill('0') << std::setw(2) << i * cols << "\t";
         std::string readable;
         for (size_t j = 0; j < cols; j++) {
             uint16_t value = address_space[i * cols + j];
             std::cout << std::setfill('0') << std::setw(2) << value << " ";
             readable += (value > ' ' && value < 128 ? static_cast<char>(value) : '.');
         }
-        std::cout << "  |" << readable << "|" <<std::endl;
+        std::cout << "  |" << readable << "|" << std::endl;
     }
     std::cout << std::dec;
 }
 
 void Memory::dump() {
-    std::cout << "---------------------------"<< std::endl;
-    std::cout << "--------MEMORY DUMP--------"<< std::endl;
+    std::cout << "---------------------------" << std::endl;
+    std::cout << "--------MEMORY DUMP--------" << std::endl;
     std::cout << "---------------------------" << std::endl;
     print_registers(this->registers);
     std::cout << std::endl;
@@ -197,34 +188,57 @@ void Memory::dump() {
     // print_address_space(this->address, this->ADDRESS_SPACE_SIZE);
 }
 
-
 // 32-bit pair-addressable register combinations
-inline uint32_t Registers::AB() const { return (static_cast<uint32_t>(A) << 16) | B; }
-inline uint32_t Registers::AC() const { return (static_cast<uint32_t>(A) << 16) | A; }
-inline uint32_t Registers::AD() const { return (static_cast<uint32_t>(A) << 16) | D; }
-inline uint32_t Registers::BC() const { return (static_cast<uint32_t>(B) << 16) | C; }
-inline uint32_t Registers::BD() const { return (static_cast<uint32_t>(B) << 16) | D; }
-inline uint32_t Registers::CD() const { return (static_cast<uint32_t>(C) << 16) | D; }
+inline uint32_t Registers::AB() const {
+    return (static_cast<uint32_t>(A) << 16) | B;
+}
+inline uint32_t Registers::AC() const {
+    return (static_cast<uint32_t>(A) << 16) | A;
+}
+inline uint32_t Registers::AD() const {
+    return (static_cast<uint32_t>(A) << 16) | D;
+}
+inline uint32_t Registers::BC() const {
+    return (static_cast<uint32_t>(B) << 16) | C;
+}
+inline uint32_t Registers::BD() const {
+    return (static_cast<uint32_t>(B) << 16) | D;
+}
+inline uint32_t Registers::CD() const {
+    return (static_cast<uint32_t>(C) << 16) | D;
+}
 
 // 64-bit quad-addressable register
 inline uint64_t Registers::ABCD() const {
-    return  (static_cast<uint64_t>(A) << 48) |
-        (static_cast<uint64_t>(B) << 32) |
-        (static_cast<uint64_t>(C) << 16) |
-        D;
+    return (static_cast<uint64_t>(A) << 48) | (static_cast<uint64_t>(B) << 32) | (static_cast<uint64_t>(C) << 16) | D;
 }
 
 inline void Registers::set(REGISTERS::REGISTER reg, uint16_t value) {
     using namespace REGISTERS;
     switch (reg) {
-    case REGISTER::A:   this->A  = value; break;
-    case REGISTER::B:   this->B  = value; break;
-    case REGISTER::C:   this->C  = value; break;
-    case REGISTER::D:   this->D  = value; break;
-    case REGISTER::SP:  this->SP = value; break;
-    case REGISTER::PC:  this->PC = value; break;
-    case REGISTER::FLAGS:  this->FLAGS = value; break;
-    default: break;
+    case REGISTER::A:
+        this->A = value;
+        break;
+    case REGISTER::B:
+        this->B = value;
+        break;
+    case REGISTER::C:
+        this->C = value;
+        break;
+    case REGISTER::D:
+        this->D = value;
+        break;
+    case REGISTER::SP:
+        this->SP = value;
+        break;
+    case REGISTER::PC:
+        this->PC = value;
+        break;
+    case REGISTER::FLAGS:
+        this->FLAGS = value;
+        break;
+    default:
+        break;
     };
 }
 
@@ -232,14 +246,29 @@ inline uint16_t Registers::get(REGISTERS::REGISTER reg) const {
     using namespace REGISTERS;
     uint16_t r = 0;
     switch (reg) {
-    case REGISTER::A:   r = this->A; break;
-    case REGISTER::B:   r = this->B; break;
-    case REGISTER::C:   r = this->C; break;
-    case REGISTER::D:   r = this->D; break;
-    case REGISTER::SP:  r = this->SP; break;
-    case REGISTER::PC:  r = this->PC; break;
-    case REGISTER::FLAGS:  r = this->FLAGS; break;
-    default: r = 0;
+    case REGISTER::A:
+        r = this->A;
+        break;
+    case REGISTER::B:
+        r = this->B;
+        break;
+    case REGISTER::C:
+        r = this->C;
+        break;
+    case REGISTER::D:
+        r = this->D;
+        break;
+    case REGISTER::SP:
+        r = this->SP;
+        break;
+    case REGISTER::PC:
+        r = this->PC;
+        break;
+    case REGISTER::FLAGS:
+        r = this->FLAGS;
+        break;
+    default:
+        r = 0;
     }
     return r;
 }

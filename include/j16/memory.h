@@ -1,64 +1,77 @@
 #pragma once
 
-#include <j16/log.h>
 #include <j16/isa.h>
+#include <j16/log.h>
 
-#include  <iostream>
-#include  <iomanip>
-#include  <string>
-#include  <vector>
 #include <cstdint>
+#include <iomanip>
+#include <iostream>
+#include <string>
+#include <vector>
 
 class Opcode;
 
 namespace REGISTERS {
-    enum class REGISTER : unsigned char {
-        A = 0, B, C, D, I, J, SP, PC, FLAGS, NUM_REGISTERS
-    };
+enum class REGISTER : unsigned char {
+    A = 0,
+    B,
+    C,
+    D,
+    I,
+    J,
+    SP,
+    PC,
+    FLAGS,
+    NUM_REGISTERS
+};
 
-    #define Accessible(X) constexpr unsigned char X = static_cast<int>(REGISTER::X)
-    Accessible(A);
-    Accessible(B);
-    Accessible(C);
-    Accessible(D);
-    Accessible(I);
-    Accessible(J);
-    Accessible(SP);
-    Accessible(PC);
-    Accessible(FLAGS);
-    Accessible(NUM_REGISTERS);
-    #undef Accessible
+#define Accessible(X) constexpr unsigned char X = static_cast<int>(REGISTER::X)
+Accessible(A);
+Accessible(B);
+Accessible(C);
+Accessible(D);
+Accessible(I);
+Accessible(J);
+Accessible(SP);
+Accessible(PC);
+Accessible(FLAGS);
+Accessible(NUM_REGISTERS);
+#undef Accessible
 
-    using REG = REGISTER;
-}
+using REG = REGISTER;
+} // namespace REGISTERS
 
 namespace SEGMENTS {
-    enum class SEGMENT : unsigned char {
-        DATA = 0, RAM, VRAM, SWAP, ROM, NUM_SEGMENTS
-    };
+enum class SEGMENT : unsigned char {
+    DATA = 0,
+    RAM,
+    VRAM,
+    SWAP,
+    ROM,
+    NUM_SEGMENTS
+};
 
 #define Accessible(X) constexpr unsigned char X = static_cast<int>(SEGMENT::X)
-    Accessible(DATA);
-    Accessible(RAM); 
-    Accessible(VRAM);
-    Accessible(SWAP);
-    Accessible(ROM);
-    Accessible(NUM_SEGMENTS);
+Accessible(DATA);
+Accessible(RAM);
+Accessible(VRAM);
+Accessible(SWAP);
+Accessible(ROM);
+Accessible(NUM_SEGMENTS);
 #undef Accessible
-}
+} // namespace SEGMENTS
 
 class Segment {
-public:
+  public:
     Segment(uint16_t, uint16_t);
     ~Segment();
 
-    uint16_t    read(uint16_t);
-    void        write(uint16_t, uint16_t);
-
-private:
+    uint16_t read(uint16_t);
+    void write(uint16_t, uint16_t);
+  private:
     uint16_t* base;
     uint16_t start;
-    uint16_t size; 
+    uint16_t size;
 };
 
 class Registers {
@@ -94,13 +107,12 @@ class Registers {
     uint16_t SP;
     uint16_t PC;
     uint16_t FLAGS;
-
-public:
+  public:
     Registers() : A(0), B(0), C(0), D(0), SP(0), PC(0), FLAGS(0) {}
 
     // 32-bit pair-addressable register combinations
-    uint32_t AB() const; 
-    uint32_t AC() const; 
+    uint32_t AB() const;
+    uint32_t AC() const;
     uint32_t AD() const;
     uint32_t BC() const;
     uint32_t BD() const;
@@ -113,7 +125,6 @@ public:
     uint16_t get(REGISTERS::REGISTER) const;
 };
 
-
 /// memory segments
 /// 0x0000 - 0x1FFF: System data - interrupt vectors, BIOS, stack. Stack starts at top (0x1FFF) and grows down.
 /// 0x2000 - 0x5FFF: General RAM - variables/dynamically allocated data
@@ -124,22 +135,19 @@ public:
 
 class Memory {
     friend class Opcode;
-
-public:
+  public:
     static Memory* getInstance();
     Memory(const Memory&) = delete;
     Memory& operator=(const Memory&) = delete;
-  
+
     uint16_t* getMemory();
 
     uint16_t get_pc() const;
     uint16_t execute_memory();
     void check_for_interrupts();
-
-private:
+  private:
     Memory();
     ~Memory();
-
 
     void initializeSegments();
 
@@ -147,17 +155,14 @@ private:
     void increment_pc();
 
     // Access value in register
-    template <typename T>
-    unsigned short& operator[](T& r) {
-        return registers[static_cast<std::underlying_type_t<REGISTERS::REG>>(r)];
+    template <typename T> unsigned short& operator[](T& r) {
+        return registers[static_cast<std::underlying_type_t<REGISTERS::REG> >(r)];
     }
 
-    template <typename T>
-    const unsigned short& operator[](T& r) const {
-        return registers[static_cast<std::underlying_type_t<REGISTERS::REG>>(r)];
+    template <typename T> const unsigned short& operator[](T& r) const {
+        return registers[static_cast<std::underlying_type_t<REGISTERS::REG> >(r)];
     }
-
-private:
+  private:
     const uint16_t ADDRESS_SPACE_SIZE = 65535;
     uint16_t* address_space;
     uint16_t* registers;
@@ -166,4 +171,3 @@ private:
 
     static Memory* instance_;
 };
-

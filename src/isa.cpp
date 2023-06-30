@@ -15,8 +15,12 @@ void Opcode::load(uint16_t instruction) {
     } // else std::cout << "No opcode for instruction 0x" << std::hex << instruction << std::dec << std::endl;
 }
 
-void Opcode::NOP() { std::cout << "NOP\n"; }
-void Opcode::HALT() { std::cout << "HALT\n"; }
+void Opcode::NOP() {
+    std::cout << "NOP\n";
+}
+void Opcode::HALT() {
+    std::cout << "HALT\n";
+}
 void Opcode::LOAD() {
     std::cout << "LOAD\n";
 }
