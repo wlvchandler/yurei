@@ -25,12 +25,12 @@ set(src_hardware  ${src_memory} ${src_device} ${src_gamepad} )
 #### build targets
 # assembler
 add_executable(oni16 "src/j16asm/j16asm.cpp"
-	${src_common} ${src_assembler} ${src_isa} 
+	${src_common} ${src_assembler} ${src_isa}
 )
 
 # hardware runtime
-add_executable(yurei "src/yurei.cpp"  
-	${src_common} ${src_hardware} ${src_runtime}  ${src_isa}  
+add_executable(yurei "src/yurei.cpp"
+	${src_common} ${src_hardware} ${src_runtime}  ${src_isa}
 )
 
 target_link_libraries(yurei PRIVATE SDL2::SDL2 SDL2::SDL2main)
