@@ -1,16 +1,23 @@
 ﻿cmake_minimum_required(VERSION 3.14)
 project(jaskASM LANGUAGES CXX)
+# add_subdirectory(ui)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+
+find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets)
+find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets Core Gui)
+
+add_subdirectory(qt)
+
 add_definitions(-DTEST_FILE_DIR="${CMAKE_CURRENT_SOURCE_DIR}/test")
 
 include(FetchContent)
 FetchContent_Declare(SDL2 GIT_REPOSITORY https://github.com/libsdl-org/SDL.git GIT_TAG release-2.28.0)
 FetchContent_MakeAvailable(SDL2)
 
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include ${CMAKE_CURRENT_SOURCE_DIR}/qt)
 
 # classes
 set(hdrs "include/j16")
@@ -33,4 +40,4 @@ add_executable(yurei "src/yurei.cpp"
 	${src_common} ${src_hardware} ${src_runtime}  ${src_isa}
 )
 
-target_link_libraries(yurei PRIVATE SDL2::SDL2 SDL2::SDL2main)
+target_link_libraries(yurei PRIVATE qt Qt${QT_VERSION_MAJOR}::Widgets SDL2::SDL2 SDL2::SDL2main)

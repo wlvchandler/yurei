@@ -6,6 +6,9 @@
                 "${workspaceRoot}/include",
                 "${workspaceRoot}/build/_deps/sdl2-src/include",
                 "/Applications/Xcode.app/Contents/SharedFrameworks/LLDB.framework/Versions/A/Resources/Clang/include/",
+                "/opt/homebrew/Cellar/qt/6.5.1_2/lib/QtWidgets.framework/Versions/A/Headers",
+                "/opt/homebrew/Cellar/qt/6.5.1_2/lib/QtWidgets.framework/Versions/A/Headers",
+                "${workspaceRoot}/qt",
                 "${default}"
             ],
             "cppStandard": "c++20",
