@@ -32,7 +32,7 @@ enum class Mnemonic : uint16_t {
     NOT = 0x0023,
     SHR = 0x0024,
     SHL = 0x0025,
-    JUMP = 0x0030,
+    JUMP = 0x0030,    
     JZ = 0x0031,
     JNZ = 0x0032,
     JC = 0x0033,
@@ -49,3 +49,5 @@ enum class Mnemonic : uint16_t {
     PC = 0x00F7,
     FLAGS = 0x00F8
 };
+
+extern uint16_t ROMtest[];

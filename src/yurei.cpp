@@ -8,5 +8,6 @@ int SDL_main(int argc, char* argv[]) {
 #else
 int main() {
 #endif
+    Runtime().start();
     return 0;
 }

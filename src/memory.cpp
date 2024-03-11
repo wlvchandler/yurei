@@ -236,7 +236,7 @@ inline void Registers::set(REGISTERS::REGISTER reg, uint16_t value) {
         break;
     case REGISTER::FLAGS:
         this->FLAGS = value;
-        break;
+        break; 
     default:
         break;
     };
