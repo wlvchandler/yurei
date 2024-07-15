@@ -10,10 +10,12 @@ inline uint16_t swap_bytes(uint16_t x) {
     return (x << 8) | (x >> 8);
 }
 
-static inline bool isSystemLittleEndian() {
-    uint16_t x = 1;
-    char* byte = reinterpret_cast<char*>(&x);
-    return *byte == 1;
+constexpr bool isSystemLittleEndian() {
+    union {
+        uint16_t i;
+        char c[2];
+    } u = { 0x0100 };
+    return u.c[0] != 0;
 }
 
 inline uint16_t correctEndianness(uint16_t value, Endian sourceEndianness) {

@@ -12,6 +12,8 @@
 #include <variant>
 #include <vector>
 
+#include <future>
+
 namespace oni16 {
 
 struct Options {
@@ -35,7 +37,7 @@ enum class TokenType {
 
 struct Token {
     TokenType type = TokenType::None;
-    std::variant<std::string, uint16_t> value;
+    std::variant<std::string_view, uint16_t> value;
     bool ia = false; // indirect address
     Token() : value(std::string("")) {}
 };
@@ -58,16 +60,18 @@ class Assembler {
 
     void generateBinary();
     void assign(const Token&);
-    void tokenize(const std::string&);
-    void parseToken(std::string&);
+    void tokenize(const std::string_view&);
+    void parseToken(std::string_view);
     bool validateOperands();
     void writeBOM(std::ofstream&);
     void writeData(std::ofstream&, std::vector<uint16_t>&);
   public:
     void assemble();
     void writeBinary(const std::string&);
+    void writeBinary_async(const std::string&);
+
   private:
-    const std::unordered_map<std::string, Mnemonic> opcodes = {
+    const std::unordered_map<std::string_view, Mnemonic> opcodes = {
         { "NOP", Mnemonic::NOP },     { "HALT", Mnemonic::HALT },  { "LOAD", Mnemonic::LOAD },
         { "STORE", Mnemonic::STORE }, { "MOV", Mnemonic::MOV },    { "PUSH", Mnemonic::PUSH },
         { "POP", Mnemonic::POP },     { "ADD", Mnemonic::ADD },    { "SUB", Mnemonic::SUB },

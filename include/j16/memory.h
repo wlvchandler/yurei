@@ -107,6 +107,7 @@ class Registers {
     uint16_t SP;
     uint16_t PC;
     uint16_t FLAGS;
+
   public:
     Registers() : A(0), B(0), C(0), D(0), SP(0), PC(0), FLAGS(0) {}
 
@@ -118,7 +119,7 @@ class Registers {
     uint32_t BD() const;
     uint32_t CD() const;
 
-    // 64-bit quad-addressable register
+    // 64-bit quad-addressable register combinations
     uint64_t ABCD() const;
 
     void set(REGISTERS::REGISTER, uint16_t value);

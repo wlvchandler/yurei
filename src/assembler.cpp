@@ -49,6 +49,25 @@ void Assembler::writeData(std::ofstream& ofs, std::vector<uint16_t>& data) {
     ofs.write(reinterpret_cast<const char*>(data.data()), data.size() * sizeof(uint16_t));
 }
 
+void Assembler::writeBinary_async(const std::string& output_file) {
+    auto future = std::async(std::launch::async, [this, output_file]() { 
+        std::ofstream out(output_file, std::ios::binary);
+        if (out.is_open()) {
+            writeBOM(out);
+            writeData(out, binaryOut);
+        } else {
+            throw std::runtime_error("oni16 error: could not open file to write: " + output_file);
+        }
+    });
+
+    try {
+        future.get();
+    } catch (const std::exception& e) {
+        (void)e;
+    }
+
+}
+
 void Assembler::writeBinary(const std::string& output_file) {
     std::ofstream out(output_file, std::ios::binary);
     if (out.is_open()) {
@@ -59,24 +78,25 @@ void Assembler::writeBinary(const std::string& output_file) {
     }
 }
 
-static bool isNumber(const std::string& token, int16_t& value) {
+static bool isNumber(const std::string_view& token, int16_t& value) {
     bool isValid = true;
     try {
-        std::string localToken = token;
+        std::string_view localToken = token;
         short sign = 1;
         if (token.front() == '-') {
             sign = -1;
-            localToken = token.substr(1);
+            localToken.remove_prefix(1);
         }
         bool hex = (localToken.find("0x") == 0 || localToken.find("0X") == 0);
         bool oct = (localToken.find("0o") == 0 || localToken.find("0O") == 0);
         bool bin = (localToken.find("0b") == 0 || localToken.find("0B") == 0);
         if (hex || oct || bin) {
-            localToken = localToken.substr(2);
+            localToken.remove_prefix(2);
         }
+        std::string tempstr(localToken);
         size_t pos;
         uint16_t _v = static_cast<uint16_t>(
-            std::stoul(localToken.c_str(), &pos, hex ? 16 : (oct ? 8 : (bin ? 2 : 10))));
+            std::stoul(tempstr.c_str(), &pos, hex ? 16 : (oct ? 8 : (bin ? 2 : 10))));
         if (pos != localToken.size() || _v > (sign == -1 ? 0x8000 : 0xFFFF)) {
             isValid = false;
         } else {
@@ -133,7 +153,9 @@ void Assembler::generateBinary() {
         current_ins_line = instruction;
 
         if (instruction.mnemonic.type == TokenType::Opcode && validateOperands()) {
-
+            if (std::holds_alternative<std::string_view>(current_ins_line.mnemonic.value)) {
+                std::string_view& mnemonic = std::get<std::string>(instruction.mnemonic.value);
+            }
             _generate(opcodes, std::get<std::string>(instruction.mnemonic.value), binaryOut);
 
             for (auto& operand : instruction.operands) {
@@ -167,11 +189,13 @@ void Assembler::assign(const Token& t) {
     current_address++;
 }
 
-void Assembler::parseToken(std::string& token) {
+void Assembler::parseToken(std::string_view token) {
     Token t;
+
     // strip indirect address formatting
     if (token.front() == '[' && token.back() == ']') {
-        token = token.substr(1, token.size() - 2);
+        token.remove_prefix(1);
+        token.remove_suffix(1);
         t.ia = true;
     }
     t.value = token;
@@ -201,36 +225,52 @@ void Assembler::parseToken(std::string& token) {
     assign(t);
 }
 
-void Assembler::tokenize(const std::string& line) {
-    std::stringstream ss(line);
-    std::string token;
+void Assembler::tokenize(const std::string_view& line) {
+    size_t pos = 0;
+    std::string_view token;
     current_ins_line = {};
 
-    while (ss >> token) {
+    while (pos < line.size()) {
+        // skip whitespace
+        pos = line.find_first_not_of(" \t", pos);
+        if (pos == std::string::npos) {
+            break;
+        }
+
+        //find end of token
+        size_t end = line.find_first_of(" \t,;", pos);
+        if (end == std::string::npos) {
+            end = line.size();
+        }
+        token = line.substr(pos, end - pos);
+ 
         // comments
         size_t comment_idx = token.find(';');
         if (comment_idx != std::string::npos) {
             if (comment_idx == 0) {
                 break;
             }
-            token.resize(comment_idx);
+            token = token.substr(0, comment_idx); // trim up to comment
         }
 
         // label
         size_t label_idx = token.find(':');
         if (label_idx != std::string::npos) {
-            symbolTable[token.substr(0, label_idx)] = current_address;
+            symbolTable[std::string(token.substr(0, label_idx))] = current_address;
+
             token = token.substr(label_idx + 1);
             if (token.empty()) {
+                pos = end + 1;
                 continue;
             }
         }
 
         if (token.back() == ',') {
-            token.pop_back();
+            token.remove_suffix(1);
         }
 
         parseToken(token);
+        pos = end + 1;
     }
 }
 
