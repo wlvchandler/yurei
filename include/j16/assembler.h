@@ -12,6 +12,8 @@
 #include <variant>
 #include <vector>
 
+#include <future>
+
 namespace oni16 {
 
 struct Options {
@@ -59,13 +61,15 @@ class Assembler {
     void generateBinary();
     void assign(const Token&);
     void tokenize(const std::string&);
-    void parseToken(std::string&);
+    void parseToken(std::string);
     bool validateOperands();
     void writeBOM(std::ofstream&);
     void writeData(std::ofstream&, std::vector<uint16_t>&);
   public:
     void assemble();
     void writeBinary(const std::string&);
+    void writeBinary_async(const std::string&);
+
   private:
     const std::unordered_map<std::string, Mnemonic> opcodes = {
         { "NOP", Mnemonic::NOP },     { "HALT", Mnemonic::HALT },  { "LOAD", Mnemonic::LOAD },
