@@ -11,11 +11,10 @@ inline uint16_t swap_bytes(uint16_t x) {
 }
 
 constexpr bool isSystemLittleEndian() {
-    union {
-        uint16_t i;
-        char c[2];
-    } u = { 0x0100 };
-    return u.c[0] != 0;
+    return []() {
+        constexpr uint16_t value = 0x0001;
+        return reinterpret_cast<const uint8_t&>(value) == 0x01;
+    }();
 }
 
 inline uint16_t correctEndianness(uint16_t value, Endian sourceEndianness) {
