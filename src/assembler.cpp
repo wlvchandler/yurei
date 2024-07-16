@@ -49,24 +49,24 @@ void Assembler::writeData(std::ofstream& ofs, std::vector<uint16_t>& data) {
     ofs.write(reinterpret_cast<const char*>(data.data()), data.size() * sizeof(uint16_t));
 }
 
-void Assembler::writeBinary_async(const std::string& output_file) {
-    auto future = std::async(std::launch::async, [this, output_file]() { 
-        std::ofstream out(output_file, std::ios::binary);
-        if (out.is_open()) {
-            writeBOM(out);
-            writeData(out, binaryOut);
-        } else {
-            throw std::runtime_error("oni16 error: could not open file to write: " + output_file);
-        }
-    });
+// void Assembler::writeBinary_async(const std::string& output_file) {
+//     auto future = std::async(std::launch::async, [this, output_file]() { 
+//         std::ofstream out(output_file, std::ios::binary);
+//         if (out.is_open()) {
+//             writeBOM(out);
+//             writeData(out, binaryOut);
+//         } else {
+//             throw std::runtime_error("oni16 error: could not open file to write: " + output_file);
+//         }
+//     });
 
-    try {
-        future.get();
-    } catch (const std::exception& e) {
-        (void)e;
-    }
+//     try {
+//         future.get();
+//     } catch (const std::exception& e) {
+//         (void)e;
+//     }
 
-}
+// }
 
 void Assembler::writeBinary(const std::string& output_file) {
     std::ofstream out(output_file, std::ios::binary);
@@ -78,20 +78,20 @@ void Assembler::writeBinary(const std::string& output_file) {
     }
 }
 
-static bool isNumber(const std::string_view& token, int16_t& value) {
+static bool isNumber(const std::string& token, int16_t& value) {
     bool isValid = true;
     try {
-        std::string_view localToken = token;
+        std::string localToken = token;
         short sign = 1;
         if (token.front() == '-') {
             sign = -1;
-            localToken.remove_prefix(1);
+            localToken = localToken.substr(1);
         }
         bool hex = (localToken.find("0x") == 0 || localToken.find("0X") == 0);
         bool oct = (localToken.find("0o") == 0 || localToken.find("0O") == 0);
         bool bin = (localToken.find("0b") == 0 || localToken.find("0B") == 0);
         if (hex || oct || bin) {
-            localToken.remove_prefix(2);
+            localToken = localToken.substr(1);
         }
         std::string tempstr(localToken);
         size_t pos;
@@ -153,8 +153,8 @@ void Assembler::generateBinary() {
         current_ins_line = instruction;
 
         if (instruction.mnemonic.type == TokenType::Opcode && validateOperands()) {
-            if (std::holds_alternative<std::string_view>(current_ins_line.mnemonic.value)) {
-                std::string_view& mnemonic = std::get<std::string>(instruction.mnemonic.value);
+            if (std::holds_alternative<std::string>(current_ins_line.mnemonic.value)) {
+                std::string& mnemonic = std::get<std::string>(instruction.mnemonic.value);
             }
             _generate(opcodes, std::get<std::string>(instruction.mnemonic.value), binaryOut);
 
@@ -189,13 +189,12 @@ void Assembler::assign(const Token& t) {
     current_address++;
 }
 
-void Assembler::parseToken(std::string_view token) {
+void Assembler::parseToken(std::string token) {
     Token t;
 
     // strip indirect address formatting
     if (token.front() == '[' && token.back() == ']') {
-        token.remove_prefix(1);
-        token.remove_suffix(1);
+        token = token.substr(1, token.size() - 2);
         t.ia = true;
     }
     t.value = token;
@@ -225,9 +224,9 @@ void Assembler::parseToken(std::string_view token) {
     assign(t);
 }
 
-void Assembler::tokenize(const std::string_view& line) {
+void Assembler::tokenize(const std::string& line) {
     size_t pos = 0;
-    std::string_view token;
+    std::string token;
     current_ins_line = {};
 
     while (pos < line.size()) {
@@ -266,7 +265,7 @@ void Assembler::tokenize(const std::string_view& line) {
         }
 
         if (token.back() == ',') {
-            token.remove_suffix(1);
+            token.pop_back();
         }
 
         parseToken(token);
